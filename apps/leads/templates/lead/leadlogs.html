@@ -1,0 +1,291 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Lead Activeity Logs{% endblock %}
+
+
+
+{% block content %}
+
+
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header ">
+            <div class="row">
+                <div class="col-md-8">
+
+                    <form method="get" action="{% url 'leadlogs' %}">
+                        <div class="row">
+
+
+                            <div class="col-md-7">
+                                <input type="text" class="form-control" name="searchText"
+                                    placeholder="Search By Lead ID/name/phone/email"
+                                    value="">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary px-4">Search</button>
+                                <a href="{% url 'leadlogs' %}" class="btn btn-success px-4">Reset</a>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="col-md-4 card-tools">
+                    <button id="advanceSearch" style="margin-top:10px" class="btn btn-warning">Advance Search</button>
+
+                </div>
+            </div>
+            <br />
+
+            <!-- <div class="row">
+                {% if telecallerId %}
+                    <div class="col-md-12 advanceSearchDiv">
+                {% else %}
+                    <div class="col-md-12 advanceSearchDiv" style="display:none;">
+                {% endif %}
+                    <form method="get" action="{% url 'leadlogs' %}" enctype="multipart/form-data" id="advanceSearchForm">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select name="telecaller" class="form-control" id="telecaller">
+                                    <option value="">Filter By Telecaller's</option>
+                                    {% for telecaller_user in telecaller_users %}
+                                        <option {% if telecaller_user.id == telecallerId %} selected {% endif %} value="{{ telecaller_user.id }}">{{ telecaller_user.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input id="filter_date_range" autocomplete="off" placeholder="Filter by Date range" type="text" class="form-control" name="filter_date_range" value="" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div> -->
+
+            <!-- <div class="card-body">
+                <div class="row table-responsive">
+                    <table class="table table-striped">
+                        {% for log in leads %}
+                            <tr>
+                                <td>
+                                    <div><strong>Lead Id : </strong>{{ log.lead_id }}</div>
+                                    <div>
+                                        <strong>Subject:</strong>
+                                        {% if log.field_change == 1 %}
+                                            Field Change
+                                        {% elif log.deleted_at %}
+                                            Lead Deleted
+                                        {% else %}
+                                            Status Change
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <strong>Message:</strong>
+                                        {% if log.field_change == 0 and not log.deleted_at %}
+                                            Lead Status was changed to "{{ log.status.name }}"{% if log.name and not log.name %}<br>
+                                            Lead Name was changed to "{{ log.name }}"{% endif %}{% if log.phone and not log.phone %}<br>
+                                            Lead Phone was changed to "{{ log.phone }}"{% endif %}{% if log.email and not log.email %}<br>
+                                            Lead Email was changed to "{{ log.email }}"{% endif %}{% if log.product_id %}
+                                            <br>
+                                            Lead Product was changed to "{{ log.product.name }}"{% endif %}{% if log.lead_source_id %}
+                                            <br>
+                                            Lead Source was changed to "{{ log.source.name }}"{% endif %}{% if log.city and not log.city %}
+                                            <br>
+                                            Lead City was changed to "{{ log.city }}"{% endif %}{% if log.spouse_name and not log.spouse_name %}
+                                            <br>
+                                            Lead Spouse Name was changed to "{{ log.spouse_name }}"{% endif %}{% if log.alternate_number and not log.alternate_number %}
+                                            <br>
+                                            Lead Alternate no was changed to "{{ log.alternate_number }}"{% endif %}{% if log.centre_name and not log.centre_name %}
+                                            <br>
+                                            Lead Centre name was changed to "{{ log.centre_name }}"{% endif %}{% if log.comment and not log.comment %}
+                                            <br>
+                                            Lead Comment was changed to "{{ log.comment }}"{% endif %}
+                                        {% elif log.field_change == 0 and log.deleted_at %}
+                                            Lead was deleted.
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <strong>Timing:</strong>
+                                        {{ log.created_at|date:"Y-m-d H:i:s" }}
+                                    </div>
+                                    <div>
+                                        <strong>By:</strong>
+                                        {{ log.user_id.username|default:"" }}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+            </div> -->
+
+            <div class="card-body">
+                <div class="row table-responsive">
+                    <table class="table table-striped">
+                        {% for log in leads %}
+                            <tr>
+                                <td>
+                                    <div><strong>Lead Id : </strong>{{ log.lead_id.id }}</div>
+                                    <div>
+                                        <strong>Subject:</strong>
+                                        {% if log.field_change == 1 %}
+                                            Field Change
+                                        {% elif log.deleted_at %}
+                                            Lead Deleted
+                                        {% else %}
+                                            Status Change
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <strong>Message:</strong>
+                                        {% if log.field_change == 1 %}
+                                            {% if log.salutation %}
+                                                Salutation was changed to "{{ log.salutation }}"
+                                            {% endif %}
+                                            {% if log.name %}
+                                                {% if log.salutation %}<br>{% endif %}
+                                                Name was changed to "{{ log.name }}"
+                                            {% endif %}
+                                            {% if log.phone %}
+                                                {% if log.salutation or log.name %}<br>{% endif %}
+                                                Phone was changed to "{{ log.phone }}"
+                                            {% endif %}
+                                            {% if log.email %}
+                                                {% if log.salutation or log.name or log.phone %}<br>{% endif %}
+                                                Email was changed to "{{ log.email }}"
+                                            {% endif %}
+                                            {% if log.product_id %}
+                                                {% if log.salutation or log.name or log.phone or log.email %}<br>{% endif %}
+                                                Product was changed to "{{ log.product.name }}"
+                                            {% endif %}
+                                            {% if log.lead_source_id %}
+                                                {% if log.salutation or log.name or log.phone or log.email or log.product_id %}<br>{% endif %}
+                                                Lead Source was changed to "{{ log.source.name }}"
+                                            {% endif %}
+                                            {% if log.city %}
+                                                {% if log.salutation or log.name or log.phone or log.email or log.product_id or log.lead_source_id %}<br>{% endif %}
+                                                City was changed to "{{ log.city }}"
+                                            {% endif %}
+                                            {% if log.spouse_name %}
+                                                {% if log.salutation or log.name or log.phone or log.email or log.product_id or log.lead_source_id or log.city %}<br>{% endif %}
+                                                Spouse Name was changed to "{{ log.spouse_name }}"
+                                            {% endif %}
+                                            {% if log.alternate_number %}
+                                                {% if log.salutation or log.name or log.phone or log.email or log.product_id or log.lead_source_id or log.city or log.spouse_name %}<br>{% endif %}
+                                                Alternate Number was changed to "{{ log.alternate_number }}"
+                                            {% endif %}
+                                            {% if log.centre_name %}
+                                                {% if log.salutation or log.name or log.phone or log.email or log.product_id or log.lead_source_id or log.city or log.spouse_name or log.alternate_number %}<br>{% endif %}
+                                                Centre Name was changed to "{{ log.centre_name }}"
+                                            {% endif %}
+                                            {% if log.comment %}
+                                                {% if log.salutation or log.name or log.phone or log.email or log.product_id or log.lead_source_id or log.city or log.spouse_name or log.alternate_number or log.centre_name %}<br>{% endif %}
+                                                Comment was changed to "{{ log.comment }}"
+                                            {% endif %}
+                                        {% elif log.field_change == 0 and log.deleted_at %}
+                                            Lead was deleted.
+                                        {% else %}
+                                            Lead Status was changed to "{{ log.status.name }}"
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <strong>Timing:</strong>
+                                        {{ log.created_at|date:"Y-m-d H:i:s" }}
+                                    </div>
+                                    <div>
+                                        <strong>By:</strong>
+                                        {{ log.user_id.username|default:"" }}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+
+
+                                                    <!-- Pagination links -->
+                                                    <div class="pagination">
+                                                        <ul class="pagination justify-content-center">
+                                                            {% if leads.has_previous %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page=1">&laquo; First</a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ leads.previous_page_number }}">Previous</a>
+                                                            </li>
+                                                            {% endif %}
+
+                                                            {% for num in leads.paginator.page_range %}
+                                                            {% if num == leads.number %}
+                                                            <li class="page-item active">
+                                                                <span class="page-link">{{ num }}</span>
+                                                            </li>
+                                                            {% else %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                                            </li>
+                                                            {% endif %}
+                                                            {% endfor %}
+
+                                                            {% if leads.has_next %}
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ leads.next_page_number }}">Next</a>
+                                                            </li>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page={{ leads.paginator.num_pages }}">Last &raquo;</a>
+                                                            </li>
+                                                            {% endif %}
+                                                        </ul>
+                                                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</section>
+
+<script>
+$(function(){
+    $("#advanceSearch").on("click", function(){
+        $(".advanceSearchDiv").toggle();
+    })
+
+     $("#telecaller").on("change", function() {
+        $("#advanceSearchForm").submit();
+     })
+
+     $("#creation_date_sort").on("change", function() {
+        $("#advanceSearchForm").submit();
+     })
+
+    $(function() {
+        $('input#filter_date_range').daterangepicker({
+            autoUpdateInput: false,
+            opens: 'left'
+        }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        });
+    });
+
+    $('input#filter_date_range').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        $("#advanceSearchForm").submit();
+    });
+
+    $('input#filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+    });
+});
+</script>
+
+{% endblock %}

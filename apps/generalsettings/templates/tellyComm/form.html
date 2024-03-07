@@ -1,0 +1,150 @@
+{% load custom_filters %}
+<div class="card-body">
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="provider">Provider</label>
+            <select id="provider" name="provider" class="form-control">
+                <option value="My-Telly" {% if leadform.provider == "My-Telly" %}selected{% endif %}>My-Telly</option>
+                <option value="My-Operator" {% if leadform.provider == "My-Operator" %}selected{% endif %}>My-Operator</option>
+                <!-- <option value="My-Telly">My-Telly</option>
+                <option value="My-Operator">My-Operator</option> -->
+            </select>
+        </div>
+        <div class="col-sm-6">
+            <label for="outgoingcall">Outgoing Call</label>
+            <select id="outgoingcall" name="outgoingcall" class="form-control">
+                <!-- <option value="No">No</option>
+                <option value="Yes">Yes</option> -->
+                <option value="No" {% if commu.outgoing_call == "No" %}selected{% endif %}>No</option>
+                <option value="Yes" {% if commu.outgoing_call == "Yes" %}selected{% endif %}>Yes</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Fields for My-Telly -->
+    <div class="row" id="my-telly-fields">
+        {% for field in leadform.visible_fields %}
+            {% if field.name|in_list:"phones,source_id,auth_token" %}
+                <div class="col-sm-6">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Fields for My-Operator -->
+    <div class="row" id="my-operator-fields" style="display: none;">
+        {% for field in leadform.visible_fields %}
+            {% if field.name|in_list:"phones,ivr_token,company_id,secret_token,public_ivr_id" %}
+                <div class="col-sm-6">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Fields for Outgoing Call (initially hidden) -->
+    <!-- <div class="row" id="outgoingcall-fields" style="display: none;">
+        <div class="col-sm-3 offset-sm-6">
+            <label for="otgname">Name</label>
+            <input type="text" id="otgname" name="otgname" placeholder="Name 1" class="form-control">
+        </div>
+        <div class="col-sm-3 offset-sm-6">
+            <label for="otgphone">Phone No</label>
+            <input type="text" id="otgphone" name="otgphone" placeholder="Phone 1" class="form-control">
+        </div>
+        <div class="col-sm-3 offset-sm-6">
+            <button id="add-more" type="button" class="btn btn-primary"><i class="fas fa-user-plus"></i></button>
+        </div>
+    </div> -->
+
+
+    <!-- Fields for Outgoing Call (initially hidden) -->
+<div class="row" id="outgoingcall-fields" style="display: none;">
+    <div class="col-sm-6 offset-sm-6">
+        <div class="row">
+            <div class="col-sm-6">
+                <label for="otgname">Name</label>
+            </div>
+            <div class="col-sm-6">
+                <label for="otgphone">Phone No</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">             
+                <input type="text" id="otgname" value="{{leadform.otgname}}" name="otgname" placeholder="Name 1" class="form-control">
+            </div>
+            <div class="col-sm-6">
+                <input type="text" id="otgphone" value="{{leadform.otghone}}" name="otgphone" placeholder="Phone 1" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 offset-sm-6">
+        <button id="add-more" type="button" class="btn btn-primary"><i class="fas fa-user-plus"></i></button>
+    </div>
+</div>
+
+<button type="submit" class="btn btn-primary px-4 float-right">Submit</button>
+
+
+    <!-- JavaScript to show/hide fields based on provider and outgoing call selection -->
+    <script>
+        document.getElementById('provider').addEventListener('change', function () {
+            const selectedProvider = this.value;
+            const myTellyFields = document.getElementById('my-telly-fields');
+            const myOperatorFields = document.getElementById('my-operator-fields');
+
+            if (selectedProvider === 'My-Telly') {
+                myTellyFields.style.display = 'block';
+                myOperatorFields.style.display = 'none';
+            } else if (selectedProvider === 'My-Operator') {
+                myTellyFields.style.display = 'none';
+                myOperatorFields.style.display = 'block';
+            }
+        });
+
+        document.getElementById('outgoingcall').addEventListener('change', function () {
+            const selectedValue = this.value;
+            const outgoingCallFields = document.getElementById('outgoingcall-fields');
+
+            if (selectedValue === 'Yes') {
+                outgoingCallFields.style.display = 'block';
+            } else {
+                outgoingCallFields.style.display = 'none';
+            }
+        });
+
+        // Trigger the change events to initially hide/show the fields based on the default selected values
+        document.getElementById('provider').dispatchEvent(new Event('change'));
+        document.getElementById('outgoingcall').dispatchEvent(new Event('change'));
+
+        // Add functionality to the "Add More" button
+        let fieldCounter = 2; // Start at 2 for the second set of fields
+        document.getElementById('add-more').addEventListener('click', function () {
+            // Clone the name and phone fields and add them to the form
+            const nameField = document.getElementById('otgname');
+            const phoneField = document.getElementById('otgphone');
+            const clonedNameField = nameField.cloneNode(true);
+            const clonedPhoneField = phoneField.cloneNode(true);
+
+            // Update the placeholders with the current counter value
+            clonedNameField.setAttribute('placeholder', 'Name ' + fieldCounter);
+            clonedPhoneField.setAttribute('placeholder', 'Phone ' + fieldCounter);
+
+            // Clear the values in the cloned fields
+            clonedNameField.value = '';
+            clonedPhoneField.value = '';
+
+            // Append the cloned fields to the form
+            nameField.parentNode.appendChild(clonedNameField);
+            phoneField.parentNode.appendChild(clonedPhoneField);
+
+            // Increment the counter
+            fieldCounter++;
+        });
+    </script>
+</div>
+
+

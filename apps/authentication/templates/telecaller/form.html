@@ -1,0 +1,36 @@
+
+
+  <div class="card-body">
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="username">Username:</label>
+            <input type="text" name="username" value="{{ user_form.username }}" class="form-control" required>
+        </div>
+        <div class="col-sm-6">
+            <label for="first_name">First Name:</label>
+            <input type="text" name="first_name" value="{{ user_form.first_name }}" class="form-control" required>
+        </div>
+        <div class="col-sm-6">
+            <label for="email">Email:</label>
+            <input type="email" name="email" value="{{ user_form.email }}" class="form-control" required>
+        </div>
+        <div class="col-sm-6">
+            <label for="phone">Phone:</label>
+            <input type="phone" name="phone" value="{{ telecaller.phone }}" class="form-control" required>
+        </div>
+        <div class="col-sm-6">
+            <label for="password">Password:</label>
+            <input type="text" name="password" value="{{ user_form.password }}" class="form-control" required>
+        </div>
+        <div class="col-sm-6">
+            <label for="department">Department:</label>
+            <select class="form-control select2" name="department_id">
+                <option value="">Select Department</option>
+                <option value="hr" selected>HR</option>
+                <option value="manager" selected>Manager</option>
+                <option value="telecaller" selected>Telecaller</option>
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary px-4 float-right">Submit</button>
+  </div>

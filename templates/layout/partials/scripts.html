@@ -1,0 +1,342 @@
+{% load static %}
+
+<!--Core Javascript-->
+
+<script src="{% static 'vendor/libs/popper/popper.js' %}"></script>
+<script src="{% static 'vendor/js/bootstrap.js' %}"></script>
+<script src="{% static 'vendor/libs/perfect-scrollbar/perfect-scrollbar.js' %}"></script>
+<script src="{% static 'vendor/js/menu.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+
+
+<script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+<script src="{% static 'plugins/select2/js/select2.full.js' %}"></script>
+<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script src="{% static 'js/plugins/datetimepicker/jquery.datetimepicker.full.min.js' %}"></script>
+<script src="{% static 'plugins/daterangepicker/daterangepicker.js' %} " ></script>
+
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+
+<script>
+  $(function(){
+      $("#date_time_field").on('change', function(){
+          var token = "{{csrf_token}}";
+          var lead_source_id = $("#id_lead_source_id").val();
+          var date_time_field = $("#date_time_field").val();
+          // alert("Works");
+          $.ajax({
+          type: "POST",
+          headers: { "X-CSRFToken": token },
+          url: "{% url 'findslot' %}",
+          data: { lead_source_id: lead_source_id, date_time_field: date_time_field },
+
+          success: function (data) {
+              $("#error-list").html(
+              '<p style="color:brown">Form Successfully Submitted</p>'
+              );
+              console.log(data);
+          },
+          error: function (data) {},
+          });
+      })
+
+      });
+      $(function(){
+
+let value =   $('input[name="type"]:checked').val();
+let mediawhatsapp =   $('input[name="whatsapptype"]:checked').val();
+$("#subject").show();
+$("#parameters").hide();
+$("#temid").hide();
+$("#smstype").hide();
+$("#whatsapptype").hide();
+$("#whatsappmedia").hide();
+$("#mesage").show();
+$("#whatsappfile").prop('required',false);
+if(value != 'email') {
+  $("#subject").hide();
+}
+if(value == 'whatsapp') {
+$("#parameters").show();
+$("#mesage").hide();
+$("#whatsapptype").show();
+}
+if(value == 'sms') {
+  $("#smstype").show();
+   let smstypeval =   $('input[name="smstype"]:checked').val();
+  if(smstypeval == 'hindi') {
+      $("#temid").show();
+  }
+}
+
+if(mediawhatsapp == 'media') {
+  $('#whatsappmedia').show();
+  $("#whatsappfile").prop('required',true);
+}
+$('input[name="type"]').on("click", function() {
+let value =   $('input[name="type"]:checked').val();
+$("#subject").show();
+$("#mesage").hide();
+$("#parameters").show();
+$("#whatsapptype").show();
+$("#temid").hide();
+$("#smstype").hide();
+if(value != 'email') {
+    $("#subject").hide();
+}
+if(value != 'whatsapp') {
+    $("#parameters").hide();
+    $("#whatsapptype").hide();
+    $("#mesage").show();
+}
+  if(value == 'sms') {
+      $("#smstype").show();
+
+  }
+})
+
+
+
+$('input[name="smstype"]').on("click", function() {
+  let smstypeval =   $('input[name="smstype"]:checked').val();
+   $("#temid").hide();
+   if(smstypeval == 'hindi') {
+      $("#temid").show();
+  }
+})
+
+
+$('input[name="whatsapptype"]').on("click", function() {
+  $("#whatsappfile").prop('required',false);
+  let typewhatsapp =   $('input[name="whatsapptype"]:checked').val();
+  $('#whatsappmedia').hide();
+  if(typewhatsapp == 'media') {
+      $('#whatsappmedia').show();
+      $("#whatsappfile").prop('required',true);
+  }
+})
+})
+</script>
+
+<script>
+  $(document).ready(function() {
+
+$('#ckbCheckAll').on('click',function(){
+  if(this.checked){
+      $('.checkBoxClass').each(function(){
+          this.checked = true;
+      });
+  }else{
+       $('.checkBoxClass').each(function(){
+          this.checked = false;
+      });
+  }
+});
+
+$('.checkBoxClass').on('click',function(){
+  if($('.checkBoxClass:checked').length == $('.checkBoxClass').length){
+      $('#ckbCheckAll').prop('checked',true);
+  }else{
+      $('#ckbCheckAll').prop('checked',false);
+  }
+});
+
+if(document.location.search.length) {
+  $([document.documentElement, document.body]).animate({
+  scrollTop: $("#filterLeadFormId").offset().top
+  }, 2000);
+}
+
+
+$('[data-toggle="tooltip"]').tooltip()
+
+// currentcallback();
+// setInterval(function() {
+//   currentcallback();
+// }, 5000);
+
+// function currentcallback() {
+//     $.ajax({
+//         url: '',
+//         dataType: 'json',
+//         method:'post',
+//         success: function(data)
+//         {
+//             if(data.html != '') {
+//               $('#callbackbox').removeClass('callbackbox');
+//               $('.currentcallback').empty().append(data.html);
+//               $('.currentcallback').show();
+//               if(data.dept == 1) {
+//                 $('#callbackbox').addClass('callbackbox');
+//               }
+//             } else {
+//                 $('.currentcallback').hide();
+//                 $('#callbackbox').removeClass('callbackbox');
+//             }
+
+//         }
+//     });
+// }
+
+});
+
+function callclose(callid) {
+  $('#callback_'+callid).remove();
+  $.ajax({
+      url: '',
+      data: {callid:callid},
+      dataType: 'json',
+      method:'post',
+      success: function(data)
+      {
+      }
+  });
+}
+$('#date_time_field').datetimepicker({
+  format:'Y-m-d',
+  minView: 2,
+  timepicker: false,
+  dateonly: true,
+  minDate:new Date(),
+  onChangeDateTime:function(dp,$input){
+      $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            });
+      $.ajax({
+          url: '/findslot/',
+          data: {'date':$input.val(),
+          source_id:$('#lead_source_id').val(),
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+      },
+          dataType: 'json',
+          method:'post',
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          success: function(data)
+          {
+              if(data.html != '') {
+                  $('#callslot').empty().append(data.html);
+                  $('#callslot').show();
+              } else {
+                  $('#callslot').hide();
+              }
+          }
+      });
+  }
+});
+
+
+
+// function checkslot() {
+//    $('#sloterror').html('');
+//    var slot = $('#slot').val();
+//    var date = $('#date_time_field').val();
+//    $.ajax({
+//         url: '/checkslot/',
+//         type: "POST",
+//         data:
+//         {
+//             date:date,
+//             source_id:$('#lead_source_id').val(),
+//             slot:slot,
+//             csrfmiddlewaretoken: '{{ csrf_token }}',
+//         },
+//         dataType: 'json',
+//         success: function(response) {
+//         {
+//             console.log('success function triggered', response);
+//             if(response.msg != '') {
+//                 $('#sloterror').html(response.msg);
+//                 $("#sloterror").css("color","red");
+//             }
+//         }
+//     });
+
+// }
+
+function checkslot() {
+     $('#sloterror').html('');
+     var slot = $('#slot').val();
+     var date = $('#date_time_field').val();
+     $.ajax({
+           url: '/checkslot/',
+           data:
+      {
+          date:date,
+          source_id:$('#lead_source_id').val(),
+          slot:slot,
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+      },
+          dataType: 'json',
+          method:'post',
+          success: function(data)
+          {
+              if(data.msg != '') {
+                  $('#sloterror').html(data.msg);
+                  $("#sloterror").css("color","red");
+              }
+          }
+      });
+
+  }
+function openparameters(templateid) {
+  var leadid = $('#leadid1').val();
+  $.ajax({
+      url: '',
+      data: {'templateid':templateid,'leadid':leadid},
+      dataType: 'json',
+      method:'post',
+      success: function(data)
+      {
+          if(data.html != '') {
+              $('#opentab').empty().append(data.html);
+              $('#opentab').show();
+          } else {
+              $('#opentab').hide();
+          }
+      }
+  });
+}
+function openlead_transfermodal(leadid) {
+  $('#currentassigned').empty();
+  $('#lead_transfer_modal').modal('show');
+  $('#transfertelecallers').show();
+
+  $("#transfer_lead_id").val(leadid);
+
+  $.ajax({
+      url: '',
+      data: {'lead_id': leadid},
+      dataType: 'json',
+      method:'post',
+      success: function(data)
+      {
+          $('#currentassigned').empty().append(data.current_assigned);
+          $('#leadtransfer_table').empty().append(data.message);
+          if(data.assign == 0){
+              $('#transfertelecallers').hide();
+          }
+      }
+  });
+}
+  // <?php
+  // $endtime = microtime(true); // Bottom of page
+  // $totaltime  = $endtime - $starttime;?>
+  // var totaltime = <?php echo  number_format($totaltime);?>;
+  // $('#totaltime').html(totaltime);
+
+  // var totaltime = {{ totaltime|floatformat:2 }};
+  // $('#totaltime').html(totaltime);
+
+
+  // var totaltime = {{ totaltime|floatformat:"2" }};
+      // document.getElementById('totaltime').innerHTML = totaltime;
+</script>

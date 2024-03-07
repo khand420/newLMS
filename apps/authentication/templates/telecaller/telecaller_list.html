@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Telecallers</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Telecallers</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header ">
+            <div class="row">
+                <div class="col-md-8">
+                </div>
+                <div class="col-md-4 card-tools">
+                    <a href="{% url 'telecaller_add' %}" class="btn btn-success">Add Telecaller</a>
+                </div>
+            </div>
+            <br />
+        </div>
+        <div class="card-body">
+            <div class="row table-responsive">
+                <table class="table  table-striped" id="telecallerTable">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>First Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for telecaller in telecallers %}
+                        <tr>
+                            <td>{{ telecaller.user.username }}</td>
+                            <td>{{ telecaller.user.first_name }}</td>
+                            <td>{{ telecaller.user.email }}</td>
+                            <td>{{ telecaller.phone }}</td>
+                            <td>
+                                <!-- Add any action buttons here -->
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</section>
+{% endblock %}

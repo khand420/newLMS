@@ -1,0 +1,18 @@
+{% load widget_tweaks %}
+
+{% for group, options, index in widget.optgroups %}
+
+    {% if group %}
+        <label class="checkbox-group">{{ group }}</label>
+    {% endif %}
+
+    {% for option in options %}
+        <div class="checkbox">
+            <label>
+                {{ option.tag }}
+                {{ option.choice_label }}
+            </label>
+        </div>
+    {% endfor %}
+
+{% endfor %}

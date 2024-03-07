@@ -1,0 +1,259 @@
+<div class="card-body">
+    <div class="row">
+        {% for field in leadform %}
+        {% if field.name != 'lead_source_id' and field.name != 'lead_status_id' %}
+        <div class="col-sm-6">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-6">
+            <input type="checkbox" name="is_potential" id="is_potential" value="yes" {% if leadform.instance.is_potential == "yes" %}checked{% endif %}>
+            <label for="is_potential">Is Potential Lead?</label>
+        </div>
+
+        <div class="col-sm-6">
+            <input type="checkbox" name="star_patient" id="star_patient" value="yes" {% if leadform.instance.star_patient == "yes" %}checked{% endif %}>
+            <label for="star_patient">Is Star?</label>
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <label for="{{ leadform.lead_source_id.id_for_label }}">{{ leadform.lead_source_id.label }}</label>
+                {{ leadform.lead_source_id }}
+            </div>
+        </div>
+
+
+        <div class="col-sm-6">
+            <label for="description">Lead Stage</label>
+            <div class="col-sm-12" style="height: 200px; overflow: auto; padding: 0px; border: 1px solid #eee;">
+                {% for status in leadform.fields.lead_status_id.queryset %}
+                <input class="lead_status_id {% if status.slug in lead_stages %}is_potential_radio{% else %}non_potential_radio{% endif %}" type="radio" value="{{ status.id }}" name="lead_status_id" {% if status.slug in lead_stages %}disabled{% endif %} {% if status.id == leadform.instance.lead_status_id.id %}checked{% endif %} />
+                {{ status.name }} <br />
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group row" style="visibility:hidden;">
+        <div class="col-sm-12">
+            <input type="checkbox" name="choose_date_time" id="choose_date_time" value="yes">
+            <label for="">Choose Stage Date/Time?</label>
+        </div>
+    </div>
+
+    <div class="form-group row" id="date_time_div">
+        <div class="col-sm-6">
+            <input placeholder="Choose Date/Time for stage" type="text" class="form-control" name="date" readonly
+                id="date_time_field" autocomplete="off">
+        </div>
+        <div class="col-sm-6" id="callslot" style="display:none">
+
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="description">Comment</label>
+        <textarea class="form-control" name="comment"
+            rows="3">{% if leadform.instance.comment %}{{ leadform.instance.comment }}{% else %}{{ lead_comment.comment }}{% endif %}</textarea>
+    </div>
+
+
+    <input type="hidden" id="questionForm" value="" name="questionForm" />
+
+    <button type="submit" class="btn btn-primary px-4 float-right">
+        Submit
+    </button>
+
+
+    <!-- <input type="hidden" id="leadId" value="{{ leadform.instance.id|default_if_none:'' }}"> -->
+    <input type="hidden" id="leadId" value="{{ leadform.instance.id|default_if_none:'' }}">
+
+
+
+
+
+
+
+</div>
+
+<div class="modal fade" id="questionModal" data-keyboard="false" data-backdrop="static">
+    <form action="javascript:void(0)" method="post" id="saveQuestionsForm">
+        {% csrf_token %}
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Questions</h4>
+                </div>
+                <div class="modal-body" id="questionModalBody">
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <input type="hidden" id="stage_id" name="stage_id" />
+
+                    <button type="button" id="closeQuestionModal" class="btn btn-danger">Skip</button>
+                    <button type="button" class="btn btn-primary" id="saveQuestionFormButton">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </form>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<!-- Add the Bootstrap CSS file -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+
+<script>
+
+var check;
+$("#is_potential").on("click", function(){
+    check = $("#is_potential").is(":checked");
+    if(check) {
+        $('input.non_potential_radio').prop('disabled', true);
+        $('input.is_potential_radio').prop('disabled', false);
+    } else {
+        $('input.is_potential_radio').prop('disabled', true);
+        $('input.non_potential_radio').prop('disabled', false);
+    }
+}); 
+
+
+
+    $(function () {
+
+        $(document).on("click", "#closeQuestionModal", function () {
+            $("#questionModal").modal("hide");
+
+        })
+
+        $(document).on("click", "#saveQuestionFormButton", function () {
+            console.log($("#saveQuestionsForm"));
+            // console.log("called");
+            $("#questionModal").modal("hide");
+        })
+
+        $('#questionModal').on('hidden.bs.modal', function () {
+            $("#questionForm").val($("#saveQuestionsForm").serialize());
+        });
+
+        $("#choose_date_time").on("click", function () {
+            $("#date_time_div").toggle();
+            if ($(this).is(':checked')) {
+                $("#date_time_field").prop('required', true);
+                $("#date_time_field").prop("readonly", false);
+            } else {
+                $("#date_time_field").prop('required', false);
+                $("#date_time_field").prop("readonly", true);
+            }
+
+
+        })
+
+        if ($(".lead_status_id").length) {
+            $(".lead_status_id").change(function () {
+        const stageId = $(this).val();
+        const leadId = $("#leadId").val();
+        if (stageId) {
+            var stages = new Array('36','38','34','33','22','18','25');
+            if(jQuery.inArray(stageId, stages) != -1) {
+              
+
+                // $("#date_time_div").hide();
+                $("#date_time_field").val("");
+                $("#date_time_field").prop('required',false);
+                $("#date_time_field").prop("readonly", true);
+                $("#slot").val("");
+                 $("#slot").prop('required',false);
+                $("#slot").prop("readonly", true);
+                $("#choose_date_time").prop("checked", false);
+                
+               // $('#slot').css('display','none');
+
+            }  else {
+                $("#is_potential").prop("checked", true);
+                 //$("#date_time_div").show();
+                 $("#date_time_field").prop('required',true);
+                 $("#date_time_field").prop("readonly", false);
+                 $("#choose_date_time").prop("checked", true);
+                 $("#slot").prop('required',true);
+                 $("#slot").prop("readonly", false);
+            }
+
+                    $.ajaxSetup({
+                        headers: {
+                            //    "X-CSRF-TOKEN": $('meta[name="_token"]').attr("content")
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        }
+                    });
+                    console.log("AJAX request triggered"); // Add this line
+                    $.ajax({
+                        url: "/leads/get-questions/",
+                        method: "POST",
+                        dataType: "json",
+                        data: {
+                            stageId,
+                            leadId,
+                        },
+                        success: function (result) {
+                            console.log(result);
+                            if (result.status != 2) {
+
+                                console.log("Executing if block");
+                                let questions =
+                                    "<div class='row'> <div class='col-md-12' id='allQuestions'>";
+                                let i = 0;
+                                $("#questionModalBody").html("");
+                                $.each(result, function (key, value) {
+                                    i++;
+                                    questions += `<input type="hidden" name="question_${i}" value="${key}">`;
+                                    $.each(value, function (index, val) {
+                                        questions += `<label>${index}</label> <div>`;
+                                        $.each(val, function (asnwerIndex, answer) {
+                                            questions += `<input class="answers validate[groupRequired[answers]]" type='radio' name="answer_${i}" value="${asnwerIndex}"> ${answer} `;
+                                        });
+                                        questions += `</div>`;
+                                    });
+                                    questions += `</div> </div>`;
+                                });
+                                $("#stage_id").val(stageId);
+                                $("#questionModalBody").append(questions);
+                                // console.log("works........");
+                                // console.log(questions);
+                                $("#questionModal").modal("show");
+                                // console.log($("#questionModal").modal("show"))
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+
+    });
+
+    function ivrcall(phone, leadid = '') {
+        $('.ivrresponse').empty();
+        $("#callivf").show();
+        $("#ivr_customer_number").val(phone);
+        $("#leadid").val(leadid);
+        $('#clicktocall').modal('show');
+    }
+
+
+</script>

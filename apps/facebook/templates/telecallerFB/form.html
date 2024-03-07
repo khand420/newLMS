@@ -1,0 +1,111 @@
+<div class="card-body">
+    {% csrf_token %}
+    
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <label class="radio-inline">
+                <input type="radio" name="status" class="validate[groupRequired[status]] {% if telecallerforms.status == 'active' %}checked{% endif %}" value="active"> Active
+            </label>
+            <label class="radio-inline" style="margin-left: 10px">
+                <input type="radio" name="status" class="validate[groupRequired[status]] {% if telecallerforms.status == 'inactive' %}checked{% endif %}" value="inactive"> Inactive
+            </label>
+            {% if form.errors.status %}
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ form.errors.status }}</strong>
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <label for="fbpage_id">Facebook Pages</label>
+            <select class="form-control select2" required name="fbpage_id" id="fbpage_id">
+                <option value="">Select</option>
+                {% for subscription in subscriptions %}
+                    <option pageid="{{ subscription.page_id }}" {% if telecallerforms.fbpage_id == subscription.page_id %}selected{% endif %} value="{{ subscription.page_id }}">{{ subscription.page_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <label for="page_form_id">Facebook Page Forms</label>
+            <select class="form-control select2" required name="page_form_id" id="page_form_id">
+                <option value="">Select</option>
+            </select>
+            <h6 id="fberror"></h6>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <label for="telecaller_id">Telecallers</label>
+            <select class="form-control select2" required name="telecaller_id" id="telecaller_id">
+                <option value="">Select</option>
+                {% for telecaller in telecallers %}
+                <!-- <option value="{{ telecaller.user_id }}" {% if leaddata.telecaller == telecaller.id %}selected{% endif %}>{{ telecaller.user__username }}</option> -->
+                    <option {% if telecallerforms.telecaller_id == telecaller.id %}selected{% endif %} value="{{ telecaller.user_id }}">{{ telecaller.user__username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary px-4 float-right">
+        {% if telecallerforms %}
+            Update
+        {% else %}
+            Save
+        {% endif %}
+    </button>
+</div>
+
+<script>
+    {% if telecallerforms %}
+        const fbform_id = "{{ telecallerforms.fbform_id }}";
+    {% else %}
+        const fbform_id = "";
+    {% endif %}
+    
+    {% if telecallerforms and telecallerforms.fbpage_id %}
+        const fbpage_id = "{{ telecallerforms.fbpage_id }}";
+    {% else %}
+        const fbpage_id = "";
+    {% endif %}
+    
+    get_facebook_forms(fbpage_id, fbform_id);
+
+    $(document).on('change', '#fbpage_id', function() {
+        const fbpage_id = $(this).find('option:selected').attr('pageid');
+        const fbform_id = "";
+        get_facebook_forms(fbpage_id, fbform_id);
+    });
+
+    function get_facebook_forms(fbpage_id, fbform_id) {
+        $("#fberror").empty().hide();
+        $("#page_form_id").empty();
+        if (fbpage_id !== "") {
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": $('meta[name="_token"]').attr("content")
+                }
+            });
+            $.ajax({
+                url: "/fb/save-page-form",
+                method: "POST",
+                dataType: "json",
+                data: {
+                    fbpage_id: fbpage_id,
+                    fbform_id: fbform_id
+                },
+                success: function(result) {
+                    $("#page_form_id").empty().append(result.form_html).show();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $("#fberror").empty().append(JSON.parse(jqXHR.responseText).message).show();
+                }
+            });
+        }
+    }
+</script>

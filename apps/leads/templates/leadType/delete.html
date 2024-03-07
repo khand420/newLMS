@@ -1,0 +1,20 @@
+<!-- leadType/delete.html -->
+
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Lead Types{% endblock %}
+
+
+{% block content %}
+  <h2>Delete LeadType - {{ leadType.name|upper }} </h2>
+  <p>Are you sure you want to delete this LeadType?</p>
+
+  <form method="post" action="{% url 'leadType_delete' leadType.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="{% url 'leadTypes' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+{% endblock %}

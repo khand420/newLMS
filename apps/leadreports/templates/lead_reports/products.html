@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!-- <meta name="_token" content="{% csrf_token %}"> -->
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4 col-4">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ totalLeads|default:0 }}</h3>
+                        <p>Total Leads</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-bag"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-4 col-4">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ convertedLeads|default:0 }}</h3>
+                        <p>Total Convert</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-4">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{  conversionPercentage|default:0 }}%</h3>
+                        <p>Conversion Percentage</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-pie-graph"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-tools">
+                <button class="btn btn-primary" type="button" id="showFilter" style="display:none">
+                    Show Filter
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row" id="filterDiv">
+                <div class="col-md-10 mx-auto">
+                    <div class="card card-primaryy">
+                        <form action="{% url 'lead_reports_products' %}" method="get" id="formId">
+                            <div class="card-body">
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label for="description">Select User</label>
+                                        <select class="form-control select2 validate[required]" name="user"
+                                            id="user">
+                                            <option value="all">All Users</option>
+                                            {% for user in users %}
+                                                <option {% if user.id == userId %} selected {% endif %}
+                                                    value="{{ user.id }}">{{ user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label for="description">Lead Products</label>
+                                        <select class="form-control select2" name="type" id="type">
+                                            <option value="all">All Lead Products</option>
+                                            {% for type in product_types %}
+                                                <option {% if type.id == typeId %} selected {% endif %}
+                                                    value="{{ type.id }}">{{ type.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <label for="start_date">From</label>
+                                        <input type="text" class="form-control datepicker" id="campaign_start_date" placeholder="" name="start_date" value="{{ startDate|default:'' }}" readonly>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="end_date">To</label>        
+                                     <input type="text" class="form-control datepicker" id="campaign_end_date" placeholder="" name="end_date" value="{{ endDate|default:'' }}" readonly>
+
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary px-4 float-right">
+                                    Filter
+                                </button>
+                                <a class="btn btn-success px-4 float-right" style="margin-right:5px;"
+                                    href="{% url 'lead_reports_products' %}">
+                                    Reset
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% if weeklyData and weeklyData|length %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">Leads</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart">
+                                <canvas id="weeklyLeadsChartDashboard"
+                                    style="min-height: 250px; height: 250px; max-height: 250px; width: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                </div>
+            </div>
+            {% elif flag == 1 %}
+            <p style="color:red">No result available</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+
+<script>
+        $(function() {
+        $('.datepicker').datepicker({
+            dateFormat: 'yy-mm-dd',  // Set the desired date format
+            changeMonth: true,      // Enable month selection
+            changeYear: true,       // Enable year selection
+            // Add any additional options or configurations as needed
+        });
+    });
+    
+    $(function() {
+        $("#showFilter").on("click", function() {
+            $("#filterDiv").slideToggle();
+        });
+
+        if (document.location.search.length) {
+            $("#showFilter").slideDown();
+            $("#filterDiv").slideUp();
+        }
+
+        {% if weeklyData %}
+        if ($('#weeklyLeadsChartDashboard').length) {
+            var barChartCanvas = $('#weeklyLeadsChartDashboard').get(0).getContext('2d');
+            var myChart = new Chart(barChartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: [{% for item in weeklyData %}"{{ item.dateRange }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    datasets: [{
+                        label: 'Total Leads',
+                        data: [{% for item in weeklyData %}{{ item.total }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                        backgroundColor: [
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                maxRotation: 20,
+                                minRotation: 20
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                precision: 0
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+        {% endif %}
+    });
+</script>
+{% endblock %}

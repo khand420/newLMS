@@ -1,0 +1,54 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Clients-User{% endblock %}
+
+{% block content %}
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header ">
+            <div class="row">
+                <div class="col-md-8">
+                <h5 class="card-header">| Department List</h5>
+                </div>
+                <div class="col-md-4 card-tools">
+                    <a href="{% url 'department_add' %}" class="btn btn-success">Add Department</a>
+                </div>
+            </div>
+            <br />
+        </div>
+        <div class="card-body">
+            <div class="row table-responsive">
+                <table class="table  table-striped"  id="leadtable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dept in page_obj %}
+                            <tr>
+                            <td>{{ dept.name }}</td>
+                            <td>{{ dept.status }}</td>
+                            <td><a href="department_update/{{dept.id}}" class="btn btn-warning" id = '{{lead.id}}'>Edit</a>
+                                <a href="department_delete/{{dept.id}}" class="btn btn-danger" id = '{{lead.id}}'>Delete</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</section>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Location{% endblock %}
+
+
+{% block content %}
+
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header ">
+            <div class="row">
+                <div class="col-md-10">
+                   <form method="get" action="{% url 'locations' %}">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <input type="text" class="form-control" name="searchText" placeholder="Search by name"
+                              value="{{ searchText|default:'' }}">
+                          </div>
+                          <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary px-4">Search</button>
+                            <a href="{% url 'locations' %}" class="btn btn-success px-4">Reset</a>
+                          </div>
+                        </div>
+                      </form>
+                      <h5 class="card-header">| Location List</h5>
+
+                </div>
+                <div class="col-md-2 card-tools">
+                    <a href="{% url 'location_add' %}" class="btn btn-success">Add Location</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row table-responsive">
+                <table class="table  table-striped" id="leadtable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for location in page_obj %}
+                            <td>{{ location.name }}</td>
+                            {% if location.status == "active" %}
+                            <td><span class="badge bg-label-success me-1">{{ location.status }}</span></td>
+                            {% else %}
+                                <td><span class="badge bg-label-danger me-1">{{ location.status }}</span></td>
+                            {% endif %}
+                            <td><a href="location/update/{{location.id}}" class="btn btn-warning" id='{{location.id}}'>edit</a>
+                           <a href="location/delete/{{location.id}}" class="btn btn-danger" id='{{location.id}}'>Delete</a></td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Pagination links -->
+                <div class="pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">&laquo; First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if num == page_obj.number %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+</section>
+{% endblock %}

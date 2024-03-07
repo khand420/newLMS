@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ telecaller.first_name }} {{ telecaller.last_name }}</h2>
+<p>Email: {{ telecaller.email }}</p>
+<p><a href="{% url 'telecaller_update' telecaller.id %}">Edit</a> | <a href="{% url 'telecaller_delete' telecaller.id %}">Delete</a></p>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<meta name="_token" content="{{ csrf_token }}" />
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Add Facebook Subscription</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'facebookSubscriptions' %}">Facebook Subscriptions</a></li>
+                    <li class="breadcrumb-item active">Add Facebook Subscription</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-tools">
+                <a href="{% url 'facebookSubscriptions' %}" class="btn btn-primary">Back</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    <ul id="list"></ul>
+                    <button onclick="myFacebookLogin()" class="btn btn-primary">Login with Facebook</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId: '904530936725782',
+            cookie: true,
+            xfbml: true,
+            version: 'v8.0'
+        });
+    };
+
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    function subscribeApp(page_id, page_access_token, page_name) {
+        console.log('Subscribing page to app! ' + page_id);
+        FB.api(
+            `/${page_id}/subscribed_apps`,
+            'post',
+            {
+                access_token: page_access_token,
+                subscribed_fields: 'feed,leadgen'
+            },
+            function(response) {
+                // AJAX request to save the subscription
+                $.ajax({
+                    url: "/fb/save-subscription",
+                    method: "POST",
+                    dataType: "json",
+                    data: {
+                        page_access_token: page_access_token,
+                        page_id: page_id,
+                        page_name: page_name,
+                        csrfmiddlewaretoken: $('meta[name="_token"]').attr("content")
+                    },
+                    success: function(result) {
+                        if (result.status === 1) {
+                            alert("Page has been subscribed successfully. Click on another page to subscribe that too.");
+                        }
+                    }
+                });
+
+                console.log('Successfully subscribed page', response);
+            }
+        );
+    }
+
+    // Only works after `FB.init` is called
+    function myFacebookLogin() {
+        FB.login(
+            function(response) {
+                console.log('Successfully logged in', response);
+                FB.api('/me/accounts', function(response) {
+                    console.log('Successfully retrieved pages', response);
+                    var pages = response.data;
+                    var ul = document.getElementById('list');
+                    for (var i = 0, len = pages.length; i < len; i++) {
+                        var page = pages[i];
+                        var li = document.createElement('li');
+                        var a = document.createElement('a');
+                        a.href = "#";
+                        a.onclick = subscribeApp.bind(this, page.id, page.access_token, page.name);
+                        a.innerHTML = page.name;
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                    }
+                    var heading = document.createElement('h3');
+                    heading.innerHTML = "Click on a page to subscribe to it.";
+                    ul.prepend(heading);
+                });
+            },
+            { scope: 'pages_manage_metadata,leads_retrieval,pages_read_engagement' }
+        );
+    }
+</script>
+{% endblock %}

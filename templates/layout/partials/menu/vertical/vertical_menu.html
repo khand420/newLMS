@@ -1,0 +1,285 @@
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+  <!-- ! Hide app brand if navbar-full -->
+  {% if not navbar_full %}
+  <div class="app-brand demo">
+    <a href="{% url 'index' %}" class="app-brand-link">
+      <span class="app-brand-logo demo">
+        {% include 'partials/logo.html' with width=25 withbg="#696cff" %}
+      </span>
+      <span class="app-brand-text demo menu-text fw-bold ms-2">{% get_theme_variables 'template_name' %}</span>
+    </a>
+
+    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+      <i class="bx bx-chevron-left bx-sm align-middle"></i>
+    </a>
+  </div>
+  {% endif %}
+
+
+  <div class="menu-inner-shadow"></div>
+
+  <ul class="menu-inner py-1">
+
+    <li class="menu-item {% if 'index' == request.resolver_match.url_name or '/dashbord/' in request.path %}active open{% endif %}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-home-circle"></i>
+        <div class="text-truncate" data-i18n="Dashboards">Dashboards</div>
+        <!--<span class="badge bg-danger rounded-pill ms-auto">5</span> -->
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+
+        <li class="menu-item {% if 'index' == request.resolver_match.url_name %}active{% endif %}">
+          <a href="{% url 'index' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Analytics">Analytics</div>
+          </a>
+        </li>
+
+
+
+      </ul>
+    </li>
+
+    <!-- Layouts -->
+    <li class="menu-item {% if  'general-settings' in request.resolver_match.url_name or 'change_password' in request.resolver_match.url_name or 'communication' in request.resolver_match.url_name %}active open{% endif %}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-check-shield"></i>
+        <div class="text-truncate" data-i18n="Layouts">Manage Profile</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item {% if 'general-settings' in request.resolver_match.url_name or 'update_general_settings' in request.resolver_match.url_name %}active open{% endif %}">
+          <a href="{% url 'general-settings' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">General Settings</div>
+          </a>
+        </li>
+        <li class="menu-item {% if 'communication_list' in request.resolver_match.url_name or '_communication' in request.resolver_match.url_name %}active open{% endif %}">
+          <a href="{% url 'communication_list' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">TellyCommu/my-Opera</div>
+          </a>
+        </li>
+        <li class="menu-item  {% if 'change_password' in request.resolver_match.url_name %}active open{% endif %}">
+          <a href="{% url 'change_password' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Change Password</div>
+          </a>
+        </li>
+
+      </ul>
+    </li>
+
+
+        <!-- Layouts -->
+    <li class="menu-item {% if  'clients-user' in request.resolver_match.url_name or 'department' in request.resolver_match.url_name %}active open{% endif %}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-user"></i>
+        <div class="text-truncate" data-i18n="Layouts">Manage Users</div>
+      </a>
+      <ul class="menu-sub">
+            <li class="menu-item {% if 'clients-user' in request.resolver_match.url_name or 'clients-user-' in request.resolver_match.url_name %}active open{% endif %}">
+          <a href="{% url 'clients-user' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Users</div>
+          </a>
+        </li>
+        <li class="menu-item {% if 'departments' in request.resolver_match.url_name or 'department_' in request.resolver_match.url_name %}active open{% endif %}">
+          <a href="{% url 'departments' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Department</div>
+          </a>
+        </li>
+
+      </ul>
+    </li>
+
+
+            <!-- Layouts -->
+      <li class="menu-item {% if  'leadlisting' in request.resolver_match.url_name  or 'leadlogs' in request.resolver_match.url_name  or 'stages' in request.resolver_match.url_name  or 'sources' in request.resolver_match.url_name  or 'leadTypes' in request.resolver_match.url_name %}active open{% endif %}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-grid"></i>
+        <div class="text-truncate" data-i18n="Layouts">Manage Leads</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item {% if 'leadlisting' in request.path or 'lead_' in request.resolver_match.url_name %}active{% endif %}">
+          <a href="{% url 'leadlisting' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Leads</div>
+          </a>
+        </li>
+        <li class="menu-item {% if 'leadTypes' in request.resolver_match.url_name or 'leadType_' in request.resolver_match.url_name %}active{% endif %}">
+          <a href="{% url 'leadTypes' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Lead Types</div>
+          </a>
+        </li>
+
+                <li class="menu-item {% if 'sources' in request.path or 'source_' in request.resolver_match.url_name %}active{% endif %}">
+          <a href="{% url 'sources' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Lead Sources</div>
+          </a>
+        </li>
+
+                <li class="menu-item {% if 'stages' in request.path or  'stage_' in request.resolver_match.url_name %}active{% endif %}">
+          <a href="{% url 'stages' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Lead Stage</div>
+          </a>
+        </li>
+
+                <li class="menu-item {% if 'leadlogs' in request.path %}active{% endif %}">
+          <a href="{% url 'leadlogs' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Lead Activity Log</div>
+          </a>
+        </li>
+
+
+
+      </ul>
+    </li>
+
+
+
+
+    <li class="menu-item {% if 'products' in request.resolver_match.url_name or 'product_' in request.resolver_match.url_name %}active open{% endif %}">
+      <a href="{%  url 'products' %}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-box"></i>
+        <div class="text-truncate" data-i18n="Support">Products</div>
+      </a>
+    </li>
+
+
+     <li class="menu-item {% if 'templates' in request.resolver_match.url_name or 'template_' in request.resolver_match.url_name %}active open{% endif %}">
+      <a href="{%  url 'templates' %}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-copy"></i>
+        <div class="text-truncate" data-i18n="Support">Templates</div>
+      </a>
+    </li>
+
+    <li class="menu-item {% if 'locations' in request.resolver_match.url_name or 'location_' in request.resolver_match.url_name %}active open{% endif %}">
+      <a href="{%  url 'locations' %}" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-map"></i>
+        <div class="text-truncate" data-i18n="Support">Location</div>
+      </a>
+    </li>
+
+        <li class="menu-item">
+      <a href="" class="menu-link" target="_blank">
+        <i class="menu-icon tf-icons bx bx-support"></i>
+        <div class="text-truncate" data-i18n="Support">Campaigns</div>
+      </a>
+    </li>
+
+
+                <!-- Layouts -->
+    <li class="menu-item {% if '/layouts/' in request.path  %}active open{% endif %}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-chart"></i>
+        <div class="text-truncate" data-i18n="Layouts">Lead Reports</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+          <a href="{% url 'layouts-without-menu' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Report By Types</div>
+          </a>
+        </li>
+        <li class="menu-item {% if '/without_navbar/' in request.path %}active{% endif %}">
+          <a href="{% url 'layouts-without-navbar' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Report By Product</div>
+          </a>
+        </li>
+
+                <li class="menu-item {% if '/without_navbar/' in request.path %}active{% endif %}">
+          <a href="{% url 'layouts-without-navbar' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Report By Source</div>
+          </a>
+        </li>
+
+                <li class="menu-item {% if '/without_navbar/' in request.path %}active{% endif %}">
+          <a href="{% url 'layouts-without-navbar' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Report By Stage</div>
+          </a>
+        </li>
+
+
+      </ul>
+    </li>
+
+
+
+              <!-- Layouts -->
+    <li class="menu-item {% if '/layouts/' in request.path  %}active open{% endif %}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-map-alt"></i>
+        <div class="text-truncate" data-i18n="Layouts">Manage Facebook</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item {% if '/without_menu/' in request.path %}active{% endif %}">
+          <a href="{% url 'layouts-without-menu' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without menu">Facebook Subscribtion</div>
+          </a>
+        </li>
+        <li class="menu-item {% if '/without_navbar/' in request.path %}active{% endif %}">
+          <a href="{% url 'layouts-without-navbar' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Product FB Forms</div>
+          </a>
+        </li>
+
+                       <li class="menu-item {% if '/without_navbar/' in request.path %}active{% endif %}">
+          <a href="{% url 'layouts-without-navbar' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Stage FB Form</div>
+
+                <li class="menu-item {% if '/without_navbar/' in request.path %}active{% endif %}">
+          <a href="{% url 'layouts-without-navbar' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Tellecaller FB Form</div>
+          </a>
+        </li>
+
+                <li class="menu-item {% if '/without_navbar/' in request.path %}active{% endif %}">
+          <a href="{% url 'layouts-without-navbar' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Without navbar">Report By Stage</div>
+          </a>
+        </li>
+
+
+      </ul>
+    </li>
+
+
+
+
+        <li class="menu-item">
+      <a href="" class="menu-link" target="_blank">
+        <i class="menu-icon tf-icons bx bx-crown"></i>
+        <div class="text-truncate" data-i18n="Support">Parked Campaigns</div>
+      </a>
+    </li>
+
+            <li class="menu-item">
+      <a href="" class="menu-link" target="_blank">
+        <i class="menu-icon tf-icons bx bx-crown"></i>
+        <div class="text-truncate" data-i18n="Support">Parked Leads</div>
+      </a>
+    </li>
+
+
+
+    <!-- Auth -->
+    <li class="menu-item {% if '/auth/' in request.path %}active open{% endif %}">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-lock-open-alt"></i>
+        <div class="text-truncate" data-i18n="Authentications">Authentications</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item {% if '/login/' in request.path %}active{% endif %}">
+          <a href="{% url 'login' %}" class="menu-link" target="_blank">
+            <div class="text-truncate" data-i18n="Login">Login</div>
+          </a>
+        </li>
+        <li class="menu-item {% if '/register/' in request.path %}active{% endif %}">
+          <a href="{% url 'signup' %}" class="menu-link" target="_blank">
+            <div class="text-truncate" data-i18n="Register">Register</div>
+          </a>
+        </li>
+        <li class="menu-item {% if '/forgot_password/' in request.path %}active{% endif %}">
+          <a href="{% url 'auth-forgot-password' %}" class="menu-link" target="_blank">
+            <div class="text-truncate" data-i18n="Frogot Password">Frogot Password</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+<!-- https://demos.themeselection.com/ -->
+</aside>

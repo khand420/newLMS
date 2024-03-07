@@ -1,0 +1,135 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Register - Pages{% endblock %}
+
+{% block page_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static  'vendor/css/pages/page-auth.css' %}">
+{% endblock page_css %}
+
+
+{% block content %}
+<div class="container-xxl">
+  <div class="authentication-wrapper authentication-basic container-p-y">
+    <div class="authentication-inner">
+
+      <!-- Register Card -->
+      <div class="card">
+        <div class="card-body">
+          <!-- Logo -->
+          <div class="app-brand justify-content-center">
+            <a href="{% url 'index' %}" class="app-brand-link gap-2">
+              <span class="app-brand-logo demo">
+                {% include 'partials/logo.html' with width=25 withbg="#696cff" %}
+              </span>
+              <span class="app-brand-text demo text-body fw-bold">{% get_theme_variables 'template_name' %}</span>
+            </a>
+          </div>
+          <!-- /Logo -->
+          <h4 class="mb-2"> Welcome to ♠ Lead Management</h4>
+          <p class="mb-4">lets build and manage lead! 🚀</p>
+
+
+                  <div class="login-box-body">
+            {% block login_errors %}
+                {% if form.errors and not form.non_field_errors %}
+                    <p class="alert alert-danger">
+                        {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}
+                            {% trans "Please correct the errors below." %}{% endif %}
+                    </p>
+                {% endif %}
+
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                        <p class="alert alert-danger">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                {% endif %}
+            {% endblock login_errors %}
+
+          <form action="" method="post" id="formAuthentication" class="mb-3">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" autofocus required>
+
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email">
+            </div>
+
+
+                                  <div id="div_id_username" class="form-group ">
+                        <label for="id_username" class=" requiredField">Select Industry<span class="asteriskField">*</span> </label>
+                        <div>
+                            <select class="form-control select2" name="industry_id" id="industrydata" required>
+                            <option value="">Select Industry</option>
+                            {% for industry in industrydata %}
+                                <option value="{{ industry.id }}">{{ industry.name }}</option>
+                            {% endfor %}
+                        </select>
+                        </div>
+                    </div>
+
+
+
+
+
+            <div class="mb-3 mt-3 form-password-toggle">
+              <label class="form-label" for="password">Password</label>
+              <div class="input-group input-group-merge">
+                <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
+                <span class="input-group-text cursor-pointer" onclick="togglePasswordVisibility('password')">
+                <i class="bx" id="password-toggle-icon"></i>
+              </span>
+
+              </div>
+            </div>
+
+            <div class="mb-3 mt-3 form-password-toggle">
+              <label class="form-label" for="password1">Confirm Password</label>
+              <div class="input-group input-group-merge">
+                <input type="password" id="password1" class="form-control" name="password1" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
+                <span class="input-group-text cursor-pointer" onclick="togglePasswordVisibility('password')">
+                <i class="bx" id="password-toggle-icon"></i>
+              </span>
+
+              </div>
+            </div>
+
+
+
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="terms-conditions" name="terms">
+                <label class="form-check-label" for="terms-conditions">
+                  I agree to
+                  <a href="javascript:void(0);">privacy policy & terms</a>
+                </label>
+              </div>
+            </div>
+            <button class="btn btn-primary d-grid w-100">
+              Sign up
+            </button>
+          </form>
+
+          <p class="text-center">
+            <span>Already have an account?</span>
+            <a href="{% url 'login' %}">
+              <span>Sign in instead</span>
+            </a>
+          </p>
+        </div>
+      </div>
+      <!-- Register Card -->
+    </div>
+  </div>
+</div>
+
+
+{% endblock content %}

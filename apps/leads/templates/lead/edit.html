@@ -1,0 +1,226 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Leads{% endblock %}
+
+
+{% block content %}
+
+<style>
+    #filesContent,
+    #logsContent,
+    #commentsContent,
+    #callsContent {
+        display: none;
+    }
+
+    #logs,
+    #files,
+    #comments,
+    #calls {
+        cursor: pointer;
+    }
+
+    .logData {
+        margin-bottom: 10px;
+    }
+
+    .minus {
+        display: none;
+    }
+</style>
+{% comment %} <meta name="_token" content="{% csrf_token %}" /> {% endcomment %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Edit Lead</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    {% url 'telecaller-leads' as route %}
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route }}">Leads</a></li>
+                    <li class="breadcrumb-item active">Edit Lead</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-tools">
+                    {% if user_department == 'telecaller' %}
+                    <a href="{% url 'telecaller-lead' %}" class="btn btn-primary">Back</a>
+                    {% else %}
+                    <a href="{% url 'leadlisting' %}" class="btn btn-primary">Back</a>
+                    {% endif %}
+                <!-- <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-primary">Back</a> -->
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="card card-primaryy">
+                        <form action="{% url 'update_lead' %}" method="POST" id="formId">
+                            {% include 'lead/form.html' %}
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ lead.id }}" name="id" />
+                        </form>
+                        {% include 'lead/modals.html' %}
+                    </div>
+                </div>
+
+                <div class="col-md-4 mx-auto">
+                    <div class="card card-primaryy">
+                        <div class="card-header primary" id="logs">
+                            <h5 class="mb-0">
+                                Lead Log
+                                <div class="pull-right">
+                                    <span><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                    <span class="minus"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                                </div>
+                            </h5>
+                        </div>
+                        <div class="" id="logsContent">
+                            <div class="card card-body">
+                                {% for log in lead_logs %}
+                                <div class="logData">
+                                    {% if log.lead_status_id == 1 %}
+                                    <div> <strong>Subject:</strong> Status Change</div>
+                                    <div><strong>Message:</strong> Lead Status was changed to "Pending"</div>
+                                    <div> <strong>Timing:</strong>
+                                        {{ log.created_at|date:"Y-m-d H:i:s"|default:'' }}</div>
+                                    <div>By: {{ log.user_id|default:"" }}</div>
+                                    <hr />
+                                    <div> <strong>Subject:</strong> Lead Created</div>
+                                    <div><strong>Message:</strong> Lead was created!!</div>
+                                    <div> <strong>Timing:</strong>
+                                        {{ log.created_at|date:"Y-m-d H:i:s"|default:'' }}</div>
+                                    <div>By: {{ log.user.name|default:"" }}</div>
+                                    {% else %}
+                                    <div> <strong>Subject:</strong> Status Change</div>
+                                    <div><strong>Message:</strong> Lead Status was changed to "{{ log.lead_status_id.name|default:'' }}"</div>
+                                    <div> <strong>Timing:</strong>
+                                        {{ log.created_at|date:"Y-m-d H:i:s"|default:'' }}</div>
+                                    <div>By: {{ log.user_id|default:"" }}</div>
+                                    {% endif %}
+                                </div>
+                                <hr />
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="card-header" id="files">
+                            <h5 class="mb-0">
+                                Attachments
+                                <div class="pull-right">
+                                    <span><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                    <span class="minus"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                                </div>
+                            </h5>
+                        </div>
+                        <div class="" id="filesContent">
+                            <div class="card card-body">
+                                {% for attachment in attcachment_logs %}
+                                <div> <strong>File:</strong> <a href=""
+                                        target="_blank" rel="noopener noreferrer">{{ attachment.file }}</a> </div>
+                                <div> <strong>Timing:</strong>
+                                    {{ attachment.created_at|date:"Y-m-d H:i:s"|default:'' }}</div>
+                                <hr />
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="card-header" id="comments">
+                            <h5 class="mb-0">
+                                Comments
+                                <div class="pull-right">
+                                    <span><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                    <span class="minus"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                                </div>
+                            </h5>
+                        </div>
+                        <div class="" id="commentsContent">
+                            <div class="card card-body">
+                                {% for data in comment_logs %}
+                                <div><strong>Message:</strong> {{ data.comment }}</div>
+                                <div> <strong>Timing:</strong>
+                                    {{ data.created_at|date:"Y-m-d H:i:s"|default:'' }}</div>
+                                <hr />
+                                {% endfor %}
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-header" id="calls">
+                            <h5 class="mb-0">
+                                CallBacks
+                                <div class="pull-right">
+                                    <span><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                    <span class="minus"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                                </div>
+                            </h5>
+                        </div>
+                        <div class="" id="callsContent">
+                            <div class="card card-body">
+                                {% for data in call_logs %}
+                                <div><strong>Stage:</strong>
+                                    {{ data.lead_status_id.name|default:'' }}</div>
+                                <div> <strong>Timing:</strong>
+                                    {{ data.date|date:"Y-m-d H:i:s"|default:'' }}</div>
+                                <hr />
+                                {% endfor %}
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(function() {
+
+        $("#logs").on("click", function(){
+            $("#logsContent").slideToggle();
+            $(this).find('span').toggle();
+        })
+
+        $("#files").on("click", function(){
+            $("#filesContent").slideToggle();
+            $(this).find('span').toggle();
+        })
+
+        $("#comments").on("click", function(){
+            $("#commentsContent").slideToggle();
+            $(this).find('span').toggle();
+        })
+
+        $("#calls").on("click", function(){
+            $("#callsContent").slideToggle();
+            $(this).find('span').toggle();
+        })
+    })
+</script>
+
+{% endblock %}
+

@@ -1,0 +1,81 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+
+{% block title %}General Settings{% endblock %}
+
+{% block content %}
+
+<meta name="_token" content="{% csrf_token %}">
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Settings</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Settings</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    <div class="card card-primaryy">
+                        <form action="{% url 'settings.add' %}" method="POST" id="formId">
+                            <div class="card-body">
+                                {% csrf_token %}
+                                {% for setting in settings %}
+                                    {% if setting.key == "parked_lead_notification_days" %}
+                                        {% with parked_lead_notification_days=setting.value %}
+                                            <!-- Rest of the form fields -->
+                                            <div class="form-group row">
+                                                <div class="col-sm-6">
+                                                    <label for="name">Number of days for Parked lead notification</label>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <input placeholder="Enter number of days" type="number"
+                                                        class="form-control validate[required, custom[number]]"
+                                                        name="parked_lead_notification_days" value="{{ parked_lead_notification_days }}">
+                                                </div>
+                                            </div>
+                                            <!-- Rest of the form fields -->
+                                        {% endwith %}
+                                    {% endif %}
+                                    <!-- Check for other settings similarly and extract their values -->
+                                {% endfor %}
+
+                                <button type="submit" class="btn btn-primary px-4 float-right">
+                                    {% if settings %}
+                                    Update
+                                    {% else %}
+                                    Save
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // JavaScript code remains unchanged
+    // ...
+</script>
+{% endblock %}

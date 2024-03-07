@@ -1,0 +1,654 @@
+<div class="card-body">
+  <div class="row">
+      {% for field in leadform %}
+      {% if field.name != 'lead_source_id' and field.name != 'lead_status_id' %}
+      <div class="col-sm-6">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+      </div>
+      {% endif %}
+      {% endfor %}
+  </div>
+
+  <div class="form-group row">
+      <div class="col-sm-6">
+          <input type="checkbox" name="is_potential" id="is_potential" value="yes" {% if leadform.instance.is_potential == "yes" %}checked{% endif %}>
+          <label for="is_potential">Is Potential Lead?</label>
+      </div>
+
+      <div class="col-sm-6">
+          <input type="checkbox" name="star_patient" id="star_patient" value="yes" {% if leadform.instance.star_patient == "yes" %}checked{% endif %}>
+          <label for="star_patient">Is Star?</label>
+      </div>
+  </div>
+
+
+  <div class="form-group row">
+      <div class="col-sm-6">
+          <div class="form-group">
+              <label for="{{ leadform.lead_source_id.id_for_label }}">{{ leadform.lead_source_id.label }}</label>
+              {{ leadform.lead_source_id }}
+              <!-- Example Input Field for lead_source_id -->
+               <input type="hidden" name="lead_source_id" id="lead_source_id" value="{{ leadform.instance.lead_source_id.id|default_if_none:'' }}">
+
+          </div>
+      </div>
+
+
+      <div class="col-sm-6">
+          <label for="description">Lead Stage</label>
+          <div class="col-sm-12" style="height: 200px; overflow: auto; padding: 0px; border: 1px solid #eee;">
+              {% for status in leadform.fields.lead_status_id.queryset %}
+              <input class="lead_status_id {% if status.slug in lead_stages %}is_potential_radio{% else %}non_potential_radio{% endif %}" type="radio" value="{{ status.id }}" name="lead_status_id" {% if status.slug in lead_stages %}disabled{% endif %} {% if status.id == leadform.instance.lead_status_id.id %}checked{% endif %} />
+              {{ status.name }} <br />
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+
+
+  <div class="form-group row">
+      <div class="col-sm-12">
+          <input type="checkbox" name="choose_date_time" id="choose_date_time" value="yes">
+          <label for="">Choose Stage Date/Time?</label>
+      </div>
+  </div>
+  
+  <div class="form-group row" id="date_time_div" style="display: none;">
+      <div class="col-sm-6">
+          <input placeholder="Choose Date/Time for stage" type="text" class="form-control" name="date" readonly
+              id="date_time_field" autocomplete="off">
+      </div>
+      <div class="col-sm-6" id="callslot" style="display:none">
+      </div>
+  </div>
+
+  <!-- <div class="form-group row">
+    <div class="col-sm-12">
+        <input type="checkbox" name="choose_date_time" id="choose_date_time" value="yes">
+        <label for="choose_date_time">Choose Stage Date/Time?</label>
+    </div>
+</div>
+
+<div class="form-group row" id="date_time_div">
+    <div class="col-sm-6">
+        <input placeholder="Choose Date/Time for stage" type="text" class="form-control date_time_field" name="date" readonly
+            id="date_time_field" autocomplete="off">
+    </div>
+    <div class="col-sm-6" id="callslot" style="display:none">
+    </div>
+</div>  -->
+
+  
+
+  <div class="form-group">
+      <label for="description">Comment</label>
+      <textarea class="form-control" name="comment"
+          rows="3">{% if leadform.instance.comment %}{{ leadform.instance.comment }}{% else %}{{ lead_comment.comment }}{% endif %}</textarea>
+  </div>
+
+
+  <input type="hidden" id="questionForm" value="" name="questionForm" />
+
+  <button type="submit" class="btn btn-primary px-4 float-right">
+      Submit
+  </button>
+
+
+
+  <input type="hidden" id="leadId" value="{% if lead_id %}{{ lead_id }}{% endif %}" />
+
+
+</div>
+
+<div class="modal fade" id="questionModal" data-keyboard="false" data-backdrop="static">
+  <form action="javascript:void(0)" method="post" id="saveQuestionsForm">
+      {% csrf_token %}
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">Questions</h4>
+              </div>
+              <div class="modal-body" id="questionModalBody">
+
+              </div>
+              <div class="modal-footer justify-content-between">
+                  <input type="hidden" id="stage_id" name="stage_id" />
+
+                  <button type="button" id="closeQuestionModal" class="btn btn-danger">Skip</button>
+                  <button type="button" class="btn btn-primary" id="saveQuestionFormButton">Save changes</button>
+              </div>
+          </div>
+          <!-- /.modal-content -->
+      </div>
+  </form>
+  <!-- /.modal-dialog -->
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-oP6HI9zXvE2uE7IfcPepa4F2rqvxWuW7fKOKQmpHb2g=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-f0j/fYXzvwGvLCNE0u4CvMBpvh3RSda0MLscAsgFF/w=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" integrity="sha256-96L0lPmVzBqk7A8+kX9p6Y2s3DgnGZgDmU0fh4ExZUg=" crossorigin="anonymous" />
+<!-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" integrity="sha256-96L0lPmVzBqk7A8+kX9p6Y2s3DgnGZgDmU0fh4ExZUg=" crossorigin="anonymous" /> -->
+
+
+<script>
+  $(function() {
+      // Datepicker setup
+      $('#date_time_field').datepicker({
+          dateFormat: 'yy-mm-dd',
+          changeMonth: true,
+          changeYear: true,
+      });
+
+  //     $("#date_time_field").datepicker({
+  //     dateFormat: "yy-mm-dd"
+  // });
+
+      // Function to handle the "is_potential" checkbox
+      var check;
+      $("#is_potential").on("click", function() {
+          check = $("#is_potential").is(":checked");
+          if (check) {
+              $('input.non_potential_radio').prop('disabled', true);
+              $('input.is_potential_radio').prop('disabled', false);
+          } else {
+              $('input.is_potential_radio').prop('disabled', true);
+              $('input.non_potential_radio').prop('disabled', false);
+          }
+      });
+
+      // Event listener for "Choose Stage Date/Time?" checkbox
+      $("#choose_date_time").on("click", function() {
+          $("#date_time_div").toggle();
+          if ($(this).is(':checked')) {
+              // $("#callslot").show();
+              console.log('date_time_field working')
+              // Make an AJAX request to fetch the slot options and update the callslot div
+             
+              $.ajax({
+                  url: "/findslot/", // Replace with the URL of your findslot view
+                  type: "POST",
+                  data: {
+                      date: $("#date_time_field").val(),
+                      lead_source_id: $("#lead_source_id").val(),
+                      csrfmiddlewaretoken: '{{ csrf_token }}',
+                  },
+                  // console.log('choose_date_time working');
+                  dataType: "json",
+
+
+                success: function(response) {
+                  console.log('success function triggered');
+                  console.log(response); // Log the response object to verify the data
+
+                  // Check if the response contains the 'html' property and it is not empty
+                  if ('html' in response && response.html.trim() !== '') {
+                      // Show the available slots in the callslot div
+                      var availableSlotsHtml = response.html;
+                      console.log(availableSlotsHtml); // Log the HTML content to check if it's valid
+
+                      // Append the HTML to the callslot div
+                      $("#callslot").html(availableSlotsHtml);
+                      $("#callslot").show(); // Make sure the callslot div is visible
+                  } else {
+                      // Hide the callslot div if there are no available slots
+                      $("#callslot").hide();
+                  }
+              },
+                //   success: function(response) {
+                //     console.log('success function triggered');
+                //     console.log(response); // Log the response object to verify the data
+
+                //     // Check if the response contains the 'html' property and it is not empty
+                //     if ('html' in response && response.html.trim() !== '') {
+                //         // Show the available slots in the callslot div
+                //         var availableSlotsHtml = response.html;
+                //         console.log(availableSlotsHtml); // Log the HTML content to check if it's valid
+
+                //         // Append the HTML to the callslot div
+                //         $("#callslot").html(availableSlotsHtml);
+                //         $("#callslot").show(); // Make sure the callslot div is visible
+                //     } else {
+                //         // Hide the callslot div if there are no available slots
+                //         $("#callslot").hide();
+                //     }
+                // },
+
+
+
+                  // success: function(response) {
+                  //     console.log('success function triggered');
+                  //     console.log(response); // Log the response object to verify the data
+
+                  //     // Show the available slots in the callslot div
+                  //     var availableSlotsHtml = response.html;
+                  //     console.log(availableSlotsHtml); // Log the HTML content to check if it's valid
+
+                  //     // Append the HTML to the callslot div
+                  //     $("#callslot").html(availableSlotsHtml);
+                  // },
+                  
+                  error: function() {
+                      // Handle the error if the AJAX request fails
+                      console.log("Error fetching slot options");
+                  }
+              });
+          } else {
+              $("#callslot").hide();
+          }
+      });
+
+
+  function checkSlot() {
+  var date = $("#date_time_field").val();
+  var source_id = $("#lead_source_id").val();
+  var slot = $("#slot").val();
+
+  $.ajax({
+      url: "/checkslot/",
+      type: "POST",
+      data: {
+          date: date,
+          lead_source_id: source_id,
+          slot: slot,
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+      },
+      dataType: "json",
+      success: function (response) {
+          console.log('success function triggered');
+          console.log(response); // Log the response object to verify the data
+
+          // Show the available slots in the callslot div
+          var slotOptionsHtml = response.html;
+          console.log(slotOptionsHtml); // Log the HTML content to check if it's valid
+
+          // Replace the slot options in the existing select element
+          $("#slot").html(slotOptionsHtml);
+          $("#sloterror").text(response.msg); // Set the error message, if any
+      },
+      error: function () {
+          console.log("Error checking slot availability");
+      }
+  });
+}
+
+
+  
+  $(function() {
+      // $("#date_time_field").prop('required', true);
+      // $("#date_time_field").prop("readonly", false);
+      // $("#slot").prop('required', true);
+      // $("#slot").prop("readonly", false);
+  
+      $(document).on("click", "#saveQuestionFormButton", function() {
+        $("#questionModal").modal("hide");
+      });
+  
+      $(document).on("click", "#closeQuestionModal", function() {
+        $("#questionModal").modal("hide");
+      });
+  
+      $('#questionModal').on('hidden.bs.modal', function() {
+        $("#questionForm").val($("#saveQuestionsForm").serialize());
+      });
+  
+      if ($(".lead_status_id").length) {
+        $(".lead_status_id").change(function() {
+          const stageId = $(this).val();
+          const leadId = $("#leadId").val();
+          if (stageId) {
+            var stages = new Array('36', '38', '34', '33', '22', '18', '25');
+            if (jQuery.inArray(stageId, stages) != -1) {
+              $("#date_time_field").val("");
+              $("#date_time_field").prop('required', false);
+              $("#date_time_field").prop("readonly", true);
+              $("#slot").val("");
+              $("#slot").prop('required', false);
+              $("#slot").prop("readonly", true);
+              // $("#choose_date_time").prop("checked", false);
+            } else {
+              $("#is_potential").prop("checked", true);
+              $("#date_time_field").prop('required', true);
+              $("#date_time_field").prop("readonly", false);
+              // $("#choose_date_time").prop("checked", true);
+              $("#slot").prop('required', true);
+              $("#slot").prop("readonly", false);
+            }
+  
+            $.ajaxSetup({
+              headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+              }
+            });
+            console.log("AJAX request triggered");
+            $.ajax({
+              url: "/leads/get-questions/",
+              method: "POST",
+              dataType: "json",
+              data: {
+                stageId,
+                leadId,
+              },
+              success: function(result) {
+                console.log(result);
+                if (result.status != 2) {
+                  console.log("Executing if block");
+                  let questions = "<div class='row'> <div class='col-md-12' id='allQuestions'>";
+                  let i = 0;
+                  $("#questionModalBody").html("");
+                  $.each(result, function(key, value) {
+                    i++;
+                    questions += `<input type="hidden" name="question_${i}" value="${key}">`;
+                    $.each(value, function(index, val) {
+                      questions += `<label>${index}</label> <div>`;
+                      $.each(val, function(asnwerIndex, answer) {
+                        questions += `<input class="answers validate[groupRequired[answers]]" type='radio' name="answer_${i}" value="${asnwerIndex}"> ${answer} `;
+                      });
+                      questions += `</div>`;
+                    });
+                    questions += `</div> </div>`;
+                  });
+                  $("#stage_id").val(stageId);
+                  $("#questionModalBody").append(questions);
+                  $("#questionModal").modal("show");
+                }
+              }
+            });
+          }
+        });
+      }
+    });
+  
+    function ivrcall(phone, leadid = '') {
+      $('.ivrresponse').empty();
+      $("#callivf").show();
+      $("#ivr_customer_number").val(phone);
+      $("#leadid").val(leadid);
+      $('#clicktocall').modal('show');
+    }
+  
+
+
+  });
+</script>
+
+<!-- <script>
+  $(function() {
+      $('.choose_date_time').datepicker({
+          dateFormat: 'yy-mm-dd',
+          changeMonth: true,
+          changeYear: true,
+      });
+
+      var check;
+      $("#is_potential").on("click", function() {
+          check = $("#is_potential").is(":checked");
+          if (check) {
+              $('input.non_potential_radio').prop('disabled', true);
+              $('input.is_potential_radio').prop('disabled', false);
+          } else {
+              $('input.is_potential_radio').prop('disabled', true);
+              $('input.non_potential_radio').prop('disabled', false);
+          }
+      });
+
+      $("#choose_date_time").on("click", function() {
+          $("#date_time_div").toggle();
+          if ($(this).is(':checked')) {
+              $("#callslot").show();
+              // Make an AJAX request to fetch the slot options and update the callslot div
+              $.ajaxSetup({
+                  headers: {
+                      "X-CSRFToken": "{{ csrf_token }}"
+                  }
+              });
+
+              $.ajax({
+                  url: "/findslot/", // Replace with the URL of your findslot view
+                  type: "POST",
+                  data: {
+                      date: $(".choose_date_time").val(),
+                      lead_source_id: $("#lead_source_id").val()
+                  },
+                  dataType: "json",
+                  success: function(response) {
+                      // Show the available slots in the callslot div
+                      var availableSlots = response.html; // Update the key here
+                      var options = "<select class='form-control select2' name='slot' id='slot' required onchange='checkSlot()'>";
+                      options += "<option value=''>Select Slot</option>";
+                      availableSlots.forEach(function(slot) {
+                          options += "<option value='" + slot + "'>" + slot + "</option>";
+                      });
+                      options += "</select><span id='sloterror'></span>";
+
+                      // Display the slots inside the callslot div
+                      $("#callslot").html(options);
+                  },
+                  error: function() {
+                      // Handle the error if the AJAX request fails
+                      console.log("Error fetching slot options");
+                  }
+              });
+          } else {
+              $("#callslot").hide();
+          }
+      });
+
+      $(function() {
+          $("#date_time_field").prop('required', true);
+          $("#date_time_field").prop("readonly", false);
+          $("#slot").prop('required', true);
+          $("#slot").prop("readonly", false);
+
+          // Rest of your code...
+      });
+      
+      // Rest of your code...
+  });
+</script> -->
+
+
+
+<!-- 
+<script>
+
+  $(function() {
+    $('.choose_date_time').datepicker({
+      dateFormat: 'yy-mm-dd',
+      changeMonth: true,
+      changeYear: true,
+    });
+  
+    var check;
+    $("#is_potential").on("click", function() {
+      check = $("#is_potential").is(":checked");
+      if (check) {
+        $('input.non_potential_radio').prop('disabled', true);
+        $('input.is_potential_radio').prop('disabled', false);
+      } else {
+        $('input.is_potential_radio').prop('disabled', true);
+        $('input.non_potential_radio').prop('disabled', false);
+      }
+    });
+  
+
+
+
+    $("#choose_date_time").on("click", function() {
+          $("#date_time_div").toggle();
+          if ($(this).is(':checked')) {
+              $("#callslot").show();
+              // Make an AJAX request to fetch the slot options and update the callslot div
+              $.ajaxSetup({
+                  headers: {
+                      "X-CSRFToken": "{{ csrf_token }}"
+                  }
+              });
+
+              $.ajax({
+                  url: "/findslot/", // Replace with the URL of your findslot view
+                  type: "POST",
+                  data: {
+                      date: $(".choose_date_time").val(),
+                      lead_source_id: $("#lead_source_id").val()
+                  },
+                  dataType: "json",
+                  success: function(response) {
+                      // Show the available slots in the callslot div
+                      var availableSlots = response.slots;
+                      var options = "<select class='form-control select2' name='slot' id='slot' required onchange='checkSlot()'>";
+                      options += "<option value=''>Select Slot</option>";
+                      availableSlots.forEach(function(slot) {
+                          options += "<option value='" + slot + "'>" + slot + "</option>";
+                      });
+                      options += "</select><span id='sloterror'></span>";
+
+                      // Display the slots inside the callslot div
+                      $("#callslot").html(options);
+                  },
+                  error: function() {
+                      // Handle the error if the AJAX request fails
+                      console.log("Error fetching slot options");
+                  }
+              });
+          } else {
+              $("#callslot").hide();
+          }
+      });
+
+
+
+
+
+    $(function() {
+      $("#date_time_field").prop('required', true);
+      $("#date_time_field").prop("readonly", false);
+      $("#slot").prop('required', true);
+      $("#slot").prop("readonly", false);
+  
+      $(document).on("click", "#saveQuestionFormButton", function() {
+        $("#questionModal").modal("hide");
+      });
+  
+      $(document).on("click", "#closeQuestionModal", function() {
+        $("#questionModal").modal("hide");
+      });
+  
+      $('#questionModal').on('hidden.bs.modal', function() {
+        $("#questionForm").val($("#saveQuestionsForm").serialize());
+      });
+  
+      if ($(".lead_status_id").length) {
+        $(".lead_status_id").change(function() {
+          const stageId = $(this).val();
+          const leadId = $("#leadId").val();
+          if (stageId) {
+            var stages = new Array('36', '38', '34', '33', '22', '18', '25');
+            if (jQuery.inArray(stageId, stages) != -1) {
+              $("#date_time_field").val("");
+              $("#date_time_field").prop('required', false);
+              $("#date_time_field").prop("readonly", true);
+              $("#slot").val("");
+              $("#slot").prop('required', false);
+              $("#slot").prop("readonly", true);
+              $("#choose_date_time").prop("checked", false);
+            } else {
+              $("#is_potential").prop("checked", true);
+              $("#date_time_field").prop('required', true);
+              $("#date_time_field").prop("readonly", false);
+              $("#choose_date_time").prop("checked", true);
+              $("#slot").prop('required', true);
+              $("#slot").prop("readonly", false);
+            }
+  
+            $.ajaxSetup({
+              headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+              }
+            });
+            console.log("AJAX request triggered");
+            $.ajax({
+              url: "/leads/get-questions/",
+              method: "POST",
+              dataType: "json",
+              data: {
+                stageId,
+                leadId,
+              },
+              success: function(result) {
+                console.log(result);
+                if (result.status != 2) {
+                  console.log("Executing if block");
+                  let questions = "<div class='row'> <div class='col-md-12' id='allQuestions'>";
+                  let i = 0;
+                  $("#questionModalBody").html("");
+                  $.each(result, function(key, value) {
+                    i++;
+                    questions += `<input type="hidden" name="question_${i}" value="${key}">`;
+                    $.each(value, function(index, val) {
+                      questions += `<label>${index}</label> <div>`;
+                      $.each(val, function(asnwerIndex, answer) {
+                        questions += `<input class="answers validate[groupRequired[answers]]" type='radio' name="answer_${i}" value="${asnwerIndex}"> ${answer} `;
+                      });
+                      questions += `</div>`;
+                    });
+                    questions += `</div> </div>`;
+                  });
+                  $("#stage_id").val(stageId);
+                  $("#questionModalBody").append(questions);
+                  $("#questionModal").modal("show");
+                }
+              }
+            });
+          }
+        });
+      }
+    });
+  
+    function ivrcall(phone, leadid = '') {
+      $('.ivrresponse').empty();
+      $("#callivf").show();
+      $("#ivr_customer_number").val(phone);
+      $("#leadid").val(leadid);
+      $('#clicktocall').modal('show');
+    }
+  
+    // AJAX function to check slot availability
+    function checkSlot() {
+      var date = $("#date_time_field").val();
+      var source_id = $("#lead_source_id").val();
+      var slot = $("#slot").val();
+  
+      // Make an AJAX request to check if the selected slot is available
+      $.ajax({
+        url: "/checkslot/", // Replace with the URL of your checkslot view
+        type: "POST",
+        data: {
+          date_time_field: date,
+          lead_source_id: source_id,
+          slot: slot,
+          csrfmiddlewaretoken: '{{ csrf_token }}', // Add the CSRF token for security
+        },
+        dataType: "json",
+        success: function(response) {
+          // Update the content of the sloterror span with the availability message
+          $("#sloterror").text(response.msg);
+        },
+        error: function() {
+          // Handle the error if the AJAX request fails
+          console.log("Error checking slot availability");
+        }
+      });
+    }
+  
+    // Attach event listener to the slot field
+    $("#slot").change(function() {
+      checkSlot();
+    });
+  
+  });
+  </script> -->
+
+
+

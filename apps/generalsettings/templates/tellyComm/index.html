@@ -1,0 +1,132 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+
+{% block title %}Telly-Commu/My-Operator{% endblock %}
+
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Telly Communication</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Telly Communication</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header ">
+            <div class="row">
+                <div class="col-md-8">
+                </div>
+                <div class="col-md-4 card-tools">
+                    <!-- <button id="importLeads" class="btn btn-primary">Import Leads</button> -->
+                    <a href="{% url 'add_communication' %}" class="btn btn-success">Add Telly Communication</a>
+                    <!-- <button id="advanceSearch" style="margin-top:10px" class="btn btn-warning">Advance Search</button> -->
+                    <!-- <a href="javascript::void()"  onclick="exportfile()" class="btn btn-success">Export Leads</a> -->
+                </div>
+            </div>
+            <br />
+        </div>
+        <div class="card-body">
+            <div class="row table-responsive">
+                <table class="table  table-striped" id="leadtable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Phones</th>
+                                <th>Source ID</th>
+                                <th>Provider</th>
+                                <th>Client ID</th>
+                                <th>Auth Token</th>
+                                <th>IVR Token</th>
+                                <th>Company ID</th>
+                                <th>Secret Token</th>
+                                <th>Public IVR ID</th>
+                                <th>Created At</th>
+                                <th>Updated At</th>
+                                <th>Created By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in page_obj%}
+                                <tr>
+                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.phones }}</td>
+                                    <td>{{ item.source_id }}</td>
+                                    <td>{{ item.provider }}</td>
+                                    <td>{{ item.client_id }}</td>
+                                    <td>{{ item.auth_token }}</td>
+                                    <td>{{ item.ivr_token }}</td>
+                                    <td>{{ item.company_id }}</td>
+                                    <td>{{ item.secret_token }}</td>
+                                    <td>{{ item.public_ivr_id }}</td>
+                                    <td>{{ item.created_at }}</td>
+                                    <td>{{ item.updated_at }}</td>
+                                    <td>{{ item.created_by }}</td>
+                                    <td><a href="update_tellycommunication/{{item.id}}" class="btn btn-warning" id='{{item.id}}'>edit</a>
+                                        <a href="delete_tellycommunication/{{item.id}}" class="btn btn-danger" id='{{item.id}}'>delete</a>
+                                    </td>
+                                </tr>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                </table>
+
+                <!-- Pagination links -->
+                <div class="pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">&laquo; First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if num == page_obj.number %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</section>
+{% endblock %}

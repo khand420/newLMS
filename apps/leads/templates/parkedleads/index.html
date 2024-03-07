@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Parked Leads</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'parkedleads' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Parked Leads</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header ">
+            <div class="row">
+                <div class="col-md-8">
+
+                    <form method="get" action="{% url 'parkedleads' %}">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <input type="text" class="form-control" name="searchText"
+                                    placeholder="Search By Lead name/phone/email"
+                                    value="{{ searchText|default:'' }}">
+
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary px-4">Search</button>
+                                <a href="{% url 'parkedleads' %}" class="btn btn-success px-4">Reset</a>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-8 importLeadsDiv" style="display:none">
+
+                    <form method="post" action="{% url 'parkedleads' %}" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% csrf_token %}
+                                <input type="file" name="file" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="submit" name="submit" value="Import" class="btn btn-primary px-4">
+                                <a class="btn btn-success px-3" href="{% url 'parkedleads' %}">Download Sample</a>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                {% comment %}
+                {% with style = type_id|default:'' or source_id|default:'' or status_id|default:'' or product_id|default:'' %}
+                {% endwith %}
+                {% endcomment %}
+                <div class="col-md-12 advanceSearchDiv" style="{{ style }}">
+
+                    <form method="get" action="{% url 'parkedleads' %}" enctype="multipart/form-data"
+                        id="advanceSearchForm">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select name="status" class="form-control" id="status">
+
+                                    <option value="">Filter By Status</option>
+                                    {% for status in statuses %}
+                                    <option {% if status.id == statusId %}selected{% endif %} value="{{ status.id }}">{{ status.name }}</option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+
+
+                                <select name="type" class="form-control" id="type">
+
+                                    <option value="">Filter By Type</option>
+                                    {% for type in types %}
+                                    <option {% if type.id == typeId %}selected{% endif %} value="{{ type.id }}">{{ type.name }}</option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+
+
+                                <select name="product" class="form-control" id="product">
+
+                                    <option value="">Filter By Product</option>
+                                    {% for product in products %}
+                                    <option {% if product.id == productId %}selected{% endif %} value="{{ product.id }}">{{ product.name }}</option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+
+
+                            <div class="col-md-3">
+
+
+                                <select name="source" class="form-control" id="source">
+
+                                    <option value="">Filter By Source</option>
+                                    {% for source in sources %}
+                                    <option {% if source.id == sourceId %}selected{% endif %} value="{{ source.id }}">{{ source.name }}</option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row table-responsive">
+                <table class="table  table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Source</th>
+                            <th>Product</th>
+                            <th>Lead Status</th>
+                            <th>Lead Type</th>
+                            <th>Convert</th>
+                            <th>Created Date</th>
+                            <th>Created By</th>
+                            <th>Update Date</th>
+                            <th>Updated By</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in leads %}
+                        <tr>
+                            <td>{{ lead.name|capfirst }}</td>
+                            <td>{{ lead.phone }}</td>
+                            <td>{{ lead.email }}</td>
+                            <td>{{ lead.lead_source_id.name|default:'' }}</td>
+                            <td>{{ lead.product_id.name|default:'' }}</td>
+                            <td>{{ lead.lead_status_id.name|default:'' }}</td>
+                            <td>{{ lead.lead_type_id|default:'' }}</td>
+                            <td>
+                                {% if lead.lead_status_id == 5 %}
+                                <span><i class="fa fa-check" style="color:green" aria-hidden="true"></i></span>
+                                {% else %}
+                                <span><i class="fa fa-times" style="color:red" aria-hidden="true"></i></span>
+                                {% endif %}
+                            </td>
+                            <td>{{ lead.created_at|date:'Y-m-d' }}</td>
+                            <td>{{ lead.created_by|capfirst }}</td>
+                            <td>{{ lead.updated_at|date:'Y-m-d' }}</td>
+                            <td>System</td>
+                            <td>
+                                <a href="{% url 'lead_update' lead.id %}" title="Edit"><i class="fas fa-edit"></i></a>
+                                <!-- <a onclick="return confirm('Do you really want to delete this lead?')" style="color:red"
+                                    href="" title="Delete"><i class="fa fa-trash"></i></a>
+                                <a href="#" data-lead_id="{{ lead.id }}" data-toggle="modal" data-target="#attachmentModal"
+                                    title="Add attachment" class="openAttachmentModal"><i class="fas fa-list"></i></a> -->
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {{ leads.links }}
+
+
+                                                <!-- Pagination links -->
+                                                <div class="pagination">
+                                                    <ul class="pagination justify-content-center">
+                                                        {% if leads.has_previous %}
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="?page=1">&laquo; First</a>
+                                                        </li>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="?page={{ leads.previous_page_number }}">Previous</a>
+                                                        </li>
+                                                        {% endif %}
+                                
+                                                        {% for num in leads.paginator.page_range %}
+                                                        {% if num == leads.number %}
+                                                        <li class="page-item active">
+                                                            <span class="page-link">{{ num }}</span>
+                                                        </li>
+                                                        {% else %}
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                                        </li>
+                                                        {% endif %}
+                                                        {% endfor %}
+                                
+                                                        {% if leads.has_next %}
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="?page={{ leads.next_page_number }}">Next</a>
+                                                        </li>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="?page={{ leads.paginator.num_pages }}">Last &raquo;</a>
+                                                        </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="attachment_lead_id" id="attachment_lead_id">
+    <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Quick File Upload</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exampleInputFile">Enter File</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="exampleInputFile" multiple="true"
+                                    name="files[]">
+                                <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                            </div>
+                            <div class="input-group-append">
+                                <button class="btn btn-success input-group-text" type="submit">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    $(function(){
+         $("#advanceSearch").on("click", function(){
+             $(".advanceSearchDiv").toggle();
+         })
+
+         $("#product").on("change", function() {
+            $("#advanceSearchForm").submit();
+         })
+         $("#source").on("change", function() {
+            $("#advanceSearchForm").submit();
+         })
+         $("#status").on("change", function() {
+            $("#advanceSearchForm").submit();
+         })
+         $("#type").on("change", function() {
+            $("#advanceSearchForm").submit();
+         })
+
+         $(".openAttachmentModal").on("click", function(){
+            const lead_id = $(this).data("lead_id");
+            $("#attachment_lead_id").val(lead_id);
+         })
+     })
+</script>
+
+{% endblock %}

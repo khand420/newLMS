@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Leads</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Leads</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header ">
+            <div class="row">
+                <div class="col-md-8">
+                    <form method="get" action="{% url 'leadlisting' %}">
+                        <div class="row">
+                          <div class="col-md-4">
+                            <input type="text" class="form-control" name="searchText" placeholder="Search by name"
+                              value="{{ searchText|default:'' }}">
+                          </div>
+                          <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary px-4">Search</button>
+                            <a href="{% url 'leadlisting' %}" class="btn btn-success px-4">Reset</a>
+                          </div>
+                        </div>
+                      </form>
+                </div>
+                <div class="col-md-4 card-tools">
+                    <button id="importLeads" class="btn btn-primary">Import Leads</button>
+                    <a href="{% url 'lead_add' %}" class="btn btn-success">Add Lead</a>
+                    <button id="advanceSearch" style="margin-top:10px" class="btn btn-warning">Advance Search</button>
+                    <a href="javascript::void()"  onclick="exportfile()" class="btn btn-success">Export Leads</a>
+                </div>
+            </div>
+            <br />
+        </div>
+        <div class="card-body">
+            <div class="row table-responsive">
+                <table class="table  table-striped"  id="leadtable">
+                    <thead>
+                        <tr>
+                            <th>Lead ID</th>
+                            <th>Date</th>
+                            <th>City</th>
+                            <th>Phone</th>                            
+                            <th>Name</th>
+                            <th>Treatment</th>
+                            <th>Update Date</th>
+                            <th>Source</th>
+                            <th>Stage</th>
+                            <th>Keyword</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        {% for lead in page_obj %}
+                            <td>{{ lead.id }}</td>
+                            <td>{{ lead.created_at }}</td>
+                            <td>{{ lead.city }}</td>
+                            <td>{{ lead.phone }}</td>                            
+                            <td>{{ lead.name|upper }}</td>
+                            <td>{{ lead.product_id }}</td>
+                            <td>{{ lead.updated_at }}</td>
+                            <td>{{ lead.lead_source_id }}</td>
+                            <td>{{ lead.lead_status_id }}</td>
+                            <td>{{ lead.gkeyword }}</td>
+                            <td>
+                                <a href="lead_update/{{lead.id}}" class="btn btn-warning" id = '{{lead.id}}'><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'lead_delete' lead.id %}" class="btn btn-danger" id="{{ lead.id }}"><i class="fas fa-trash"></i></a>
+
+                                <!-- <a href="{% url 'lead-assigning' %}" class="btn btn-warning openlead_assigning_modal" id="{{ lead.id }}" data-toggle="modal" data-target="#lead_assigning_modal" title="Add lead transfer"><i class="fas fa-user-plus"></i></a>         -->
+                                
+                                <!-- <a href="leads/lead-assigning/{{lead.id}}" class="btn btn-warning" id = '{{lead.id}}' data-toggle="modal" data-target="#lead_assigning_modal" title="Add lead transfer" class="openlead_assigning_modal"><i class="fas fa-user-plus"></i></a> -->
+                                <!-- <a href="lead_update/{{lead.id}}" class="btn btn-warning" id = '{{lead.id}}' data-toggle="modal" data-target="#lead_assigning_modal" title="Add lead transfer" class="openlead_assigning_modal"><i class="fas fa-user-plus"></i></a> -->
+                                <!-- <a href="upload/{{lead.id}}" class="btn btn-warning" id = '{{lead.id}}' data-toggle="modal" data-target="#attachmentModal" title="Add attachment" class="openAttachmentModal"><i class="fas fa-list"></i></a> -->
+                                <a href="#" class="btn btn-warning openAttachmentModal" id="{{ lead.id }}" data-toggle="modal" data-target="#attachmentModal" title="Add attachment"><i class="fas fa-list"></i></a>
+                                <a href="#" class="btn btn-warning openlead_assigning_modal" id = '{{ lead.id }}' data-toggle="modal" data-target="#lead_assigning_modal" title="Add lead transfer"><i class="fas fa-user-plus"></i></a>
+
+                             
+                            </td>
+                            </tr>
+                                {% endfor %}
+                    </tbody>
+                </table>
+                                <!-- Pagination links -->
+                                <div class="pagination">
+                                    <ul class="pagination justify-content-center">
+                                        {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1">&laquo; First</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                                        </li>
+                                        {% endif %}
+                
+                                        {% for num in page_obj.paginator.page_range %}
+                                        {% if num == page_obj.number %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                        {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                        {% endif %}
+                                        {% endfor %}
+                
+                                        {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                
+            </div>
+
+        </div>
+    </div>
+    {% include 'lead/modals.html' %}
+
+    
+</section>
+
+
+
+{% endblock %}
+
+
+

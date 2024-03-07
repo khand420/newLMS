@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>General Settings</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                    <li class="breadcrumb-item active">General Settings</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <div class="card card-primaryy">
+                    <form action="" method="POST" id="formId" enctype="multipart/form-data">
+                        <div class="card-body">
+                            {% csrf_token %}
+                           
+                            
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="name">Slot Start Time</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="row">
+                                        <input id="start_time" required value="" name="start_time" class="form-control" placeholder="Slot Start Time" type="time" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="name">Slot End Time</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="row">
+                                        <input id="end_time" required value=""  name="end_time" class="form-control" placeholder="Slot End Time" type="time" >
+                                    </div>
+                                </div>
+                            </div>
+                           
+                            <button type="submit" class="btn btn-primary px-4 float-right">
+                              
+                                Save
+                                
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+{% endblock %}
+
+
+
+
+<!-- templates/general_settings.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>General Settings</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">General Settings</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    <div class="card card-primaryy">
+                        <form action="{% url 'update_general_settings' %}" method="POST" id="formId">
+                            <div class="card-body">
+                                {% csrf_token %}
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="name">Slot Start Time</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <div class="row">
+                                            <input id="start_time" required value="" name="start_time" class="form-control" placeholder="Slot Start Time" type="time" >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="name">Slot End Time</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <div class="row">
+                                            <input id="end_time" required value=""  name="end_time" class="form-control" placeholder="Slot End Time" type="time" >
+                                        </div>
+                                    </div>
+                                </div>
+                                {% with general_data=general_settings.0 %}
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="name">Business Whatsapp Mobile Number</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <div class="row">
+                                            <input id="whatsapp_mobile" value="{{ general_data.whatsapp_mobile|default:'' }}" name="whatsapp_mobile" class="form-control" placeholder="Conversion Date" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="name">Whastapp Api Key</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <div class="row">
+                                            <input id="whatsapp_apikey" value="{{ general_data.whatsapp_apikey|default:'' }}" name="whatsapp_apikey" class="form-control" placeholder="Conversion Date" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                                <button type="submit" class="btn btn-primary px-4 float-right">
+                                    {% if general_settings %}
+                                    Update
+                                    {% else %}
+                                    Save
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

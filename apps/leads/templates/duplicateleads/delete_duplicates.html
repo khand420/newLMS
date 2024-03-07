@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Delete Duplicate Leads</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Delete Duplicate Leads</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Duplicate Leads List</h3>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'delete_duplicates' %}">
+                {% csrf_token %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Lead ID</th>
+                            <th>Date</th>
+                            <th>City</th>
+                            <th>Phone</th>
+                            <th>Name</th>
+                            <th>Treatment</th>
+                            <th>Update Date</th>
+                            <th>Source</th>
+                            <th>Stage</th>
+                            <th>Keyword</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in duplicates %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="lead_ids" value="{{ lead.id }}">
+                                </td>
+                                <td>{{ lead.id }}</td>
+                                <td>{{ lead.created_at }}</td>
+                                <td>{{ lead.city }}</td>
+                                <td>{{ lead.phone }}</td>
+                                <td>{{ lead.name|upper }}</td>
+                                <td>{{ lead.product_id }}</td>
+                                <td>{{ lead.updated_at }}</td>
+                                <td>{{ lead.lead_source_id }}</td>
+                                <td>{{ lead.lead_status_id }}</td>
+                                <td>{{ lead.gkeyword }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-danger">Delete Selected Leads</button>
+            </form>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

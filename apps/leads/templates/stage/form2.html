@@ -1,0 +1,501 @@
+
+
+{{ form.status.label_tag }} {{ form.status }}
+{{ form.name.label_tag }} {{ form.name }}
+{{ form.description.label_tag }} {{ form.description }}
+{{ form.stage_status.label_tag }} {{ form.stage_status }}
+{{ form.is_main.label_tag }} {{ form.is_main }}
+{{ form.categeory_id.label_tag }} {{ form.categeory_id }}
+{{ form.is_potential.label_tag }} {{ form.is_potential }}
+{{ form.client_id.label_tag }} {{ form.client_id }}
+
+<!-- {{ form.sms_template_id.label_tag }} {{ form.sms_template_id }} -->
+<!-- {{ form.email_template_id.label_tag }} {{ form.email_template_id }}
+{{ form.whatsapp_template_id.label_tag }} {{ form.whatsapp_template_id }} -->
+
+<div class="form-group">
+  <label for="{{ form.sms_template_id.id_for_label }}">{{ form.sms_template_id.label }}</label>
+  {{ form.sms_template_id }}
+</div>
+<div class="form-group">
+<label for="{{ form.email_template_id.id_for_label }}">{{ form.email_template_id.label }}</label>
+{{ form.email_template_id }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.whatsapp_template_id.id_for_label }}">{{ form.whatsapp_template_id.label }}</label>
+{{ form.whatsapp_template_id }}
+</div>
+
+
+
+
+
+
+<div class="form-group row">
+  <div class="col-sm-12">
+    <input type="checkbox" name="is_pre_stage" id="is_pre_stage" value="yes" {% if form.is_pre_stage.value|default_if_none:"" == "yes" %}checked{% endif %}>
+    <label for="description">Select Pre Stage Reminder Template <small>(this will be sent one day before the
+        event)</small></label>
+  </div>
+</div>
+
+<div class="form-group row hidden" id="pre_stage_div">
+  <!-- <div class="col-sm-3">
+    {{ form.pre_sms_template_id.label_tag }} {{ form.pre_sms_template_id }}
+  </div>
+
+  <div class="col-sm-3">
+    {{ form.pre_email_template_id.label_tag }} {{ form.pre_email_template_id }}
+  </div>
+
+  <div class="col-sm-3">
+    {{ form.pre_whatsapp_template_id.label_tag }} {{ form.pre_whatsapp_template_id }}
+  </div> -->
+
+  <div class="col-sm-3">
+    <label for="{{ form.pre_sms_template_id.id_for_label }}">{{ form.pre_sms_template_id.label }}</label>
+    {{ form.pre_sms_template_id }}
+</div>
+<div class="col-sm-3">
+  <label for="{{ form.pre_email_template_id.id_for_label }}">{{ form.pre_email_template_id.label }}</label>
+  {{ form.pre_email_template_id }}
+</div>
+
+<div class="col-sm-3">
+  <label for="{{ form.pre_whatsapp_template_id.id_for_label }}">{{ form.pre_whatsapp_template_id.label }}</label>
+  {{ form.pre_whatsapp_template_id }}
+</div>
+</div>
+
+
+
+<div class="form-group row">
+  <div class="col-sm-12">
+
+      <input type="checkbox" name="is_thankyou_stage" id="is_thankyou_stage" value="yes" {% if form.is_thankyou_stage.value|default_if_none:"" == "yes" %}checked{% endif %} >
+    <label for="description">Select Thank you and Follow up Stage Template?</label>
+  </div>
+</div>
+
+<div class="form-group row hidden" id="thankyou_stage_div">
+  <!-- <div class="col-sm-3">
+    {{ form.thankyou_sms_template_id.label_tag }} {{ form.thankyou_sms_template_id }}
+  </div>
+
+  <div class="col-sm-3">
+    {{ form.thankyou_email_template_id.label_tag }} {{ form.thankyou_email_template_id }}
+  </div>
+
+  <div class="col-sm-3">
+    {{ form.thankyou_whatsapp_template_id.label_tag }} {{ form.thankyou_whatsapp_template_id }}
+  </div> -->
+  <div class="col-sm-3">
+    <label for="{{ form.thankyou_sms_template_id.id_for_label }}">{{ form.thankyou_sms_template_id.label }}</label>
+    {{ form.thankyou_sms_template_id }}
+</div>
+<div class="col-sm-3">
+  <label for="{{ form.thankyou_email_template_id.id_for_label }}">{{ form.thankyou_email_template_id.label }}</label>
+  {{ form.thankyou_email_template_id }}
+</div>
+
+<div class="col-sm-3">
+  <label for="{{ form.thankyou_whatsapp_template_id.id_for_label }}">{{ form.thankyou_whatsapp_template_id.label }}</label>
+  {{ form.thankyou_whatsapp_template_id }}
+</div>
+</div>
+
+
+<div class="form-group row">
+  <div class="col-sm-12">
+      <input type="checkbox" name="is_recurring" id="is_recurring" value="yes" {% if form.is_recurring.value|default_if_none:"" == "yes" %}checked{% endif %}>
+    <label for="description">Recurring Template?</label>
+  </div>
+</div>
+
+<div class="form-group row hidden" id="recurring_div">
+  <!-- <div class="col-sm-3">
+    {{ form.recurring_email_template_id.label_tag }} {{ form.recurring_email_template_id }}
+  </div>
+
+  <div class="col-sm-3">
+    {{ form.recurring_sms_template_id.label_tag }} {{ form.recurring_sms_template_id }}
+  </div>
+
+  <div class="col-sm-3">
+    {{ form.recurring_whatsapp_template_id.label_tag }} {{ form.recurring_whatsapp_template_id }}
+  </div>
+
+  <div class="col-sm-3">
+    {{ form.duration.label_tag }} {{ form.duration }}
+  </div> -->
+
+  <div class="col-sm-3">
+    <label for="{{ form.recurring_sms_template_id.id_for_label }}">{{ form.recurring_sms_template_id.label }}</label>
+    {{ form.recurring_sms_template_id }}
+</div>
+  
+  <div class="col-sm-3">
+    <label for="{{ form.recurring_email_template_id.id_for_label }}">{{ form.recurring_email_template_id.label }}</label>
+    {{ form.recurring_email_template_id }}
+  </div>
+
+<div class="col-sm-3">
+  <label for="{{ form.recurring_whatsapp_template_id.id_for_label }}">{{ form.recurring_whatsapp_template_id.label }}</label>
+  {{ form.recurring_whatsapp_template_id }}
+</div>
+
+<!-- <div class="col-sm-3">
+  <label for="{{ form.duration.id_for_label }}">{{ form.duration.label }}</label>
+  {{ form.duration.label_tag }} {{ form.duration }}
+  {{ form.duration }}
+
+</div> -->
+
+{% for question in statusQuestions %}
+  <div class="form-group">
+    {% if question.parent_id == NULL or question.parent_id == "" %}
+      <div class="row">
+        <div class="col-sm-12">
+          <label for="name">Question</label>
+          <input id="name" placeholder="Enter Question" type="text" class="form-control" name="question{{ forloop.counter0 }}[]" value="{{ question.text }}">
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="row">
+      {% for answer in question.answers %}
+        <div class="col-sm-3">
+          <label for="name">Answer{{ forloop.counter }}</label>
+          <input id="name" placeholder="Enter answer" type="text" class="form-control" name="question{{ forloop.parentloop.counter0 }}['answers'][]" value="{{ answer.text }}">
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="row">
+      {% for answer in question.answers %}
+        <div class="col-sm-3">
+          <label for="name">Score{{ forloop.counter }}</label>
+          <input id="name" placeholder="Enter score" type="number" class="form-control sum_boxes{{ forloop.parentloop.counter0 }}" name="question{{ forloop.parentloop.counter0 }}['scores'][]" value="{{ answer.score }}" onKeyUp="checkScore('sum_boxes{{ forloop.parentloop.counter0 }}', this)">
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endfor %}
+
+<hr />
+
+<div class="form-group">
+  <div class="row">
+    <div class="col-sm-12">
+      <label for="name">Question</label>
+      <input id="name" placeholder="Enter Question" type="text" class="form-control" name="questions-{{ i }}[]">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-3">
+      <label for="name">Answer1</label>
+      <input id="name" placeholder="Enter answer" type="text" class="form-control" name="questions-{{ i }}-answers[]">
+    </div>
+    <div class="col-sm-3">
+      <label for="name">Answer2</label>
+      <input id="name" placeholder="Enter answer" type="text" class="form-control" name="questions-{{ i }}-answers[]">
+    </div>
+    <div class="col-sm-3">
+      <label for="name">Answer3</label>
+      <input id="name" placeholder="Enter answer" type="text" class="form-control" name="questions-{{ i }}-answers[]">
+    </div>
+    <div class="col-sm-3">
+      <label for="name">Answer4</label>
+      <input id="name" placeholder="Enter answer" type="text" class="form-control" name="questions-{{ i }}-answers[]">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-3">
+      <label for="name">Score1</label>
+      <input id="name" placeholder="Enter score" type="number" class="form-control sum_boxes{{ i }}" name="questions-{{ i }}-scores[]" value="0" onKeyUp="checkScore('sum_boxes{{ i }}', this)">
+    </div>
+    <div class="col-sm-3">
+      <label for="name">Score2</label>
+      <input id="name" placeholder="Enter score" type="number" class="form-control sum_boxes{{ i }}" name="questions-{{ i }}-scores[]" value="0" onKeyUp="checkScore('sum_boxes{{ i }}', this)">
+    </div>
+    <div class="col-sm-3">
+      <label for="name">Score3</label>
+      <input id="name" placeholder="Enter score" type="number" class="form-control sum_boxes{{ i }}" name="questions-{{ i }}-scores[]" value="0" onKeyUp="checkScore('sum_boxes{{ i }}', this)">
+    </div>
+    <div class="col-sm-3">
+      <label for="name">Score4</label>
+      <input id="name" placeholder="Enter score" type="number" class="form-control sum_boxes{{ i }}" name="questions-{{ i }}-scores[]" value="0" onKeyUp="checkScore('sum_boxes{{ i }}', this)">
+    </div>
+  </div>
+</div>
+
+<input type="hidden" value="{{ i }}" id="lastValue" />
+<div id="cloned_div"></div>
+
+<div class="form-group">
+  <div class="col-sm-12">
+    <a href="javascript:void(0)" class="" id="add_more">
+      <span><i class="fa fa-plus" aria-hidden="true"></i></span>
+      Add More Questions
+    </a>
+  </div>
+</div>
+
+
+
+<button class="btn btn-primary px-5" type="submit">Create Stage</button>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  var i = $("#lastValue").val();
+
+  {% if form.is_recurring.value == "yes" %}
+  $("#recurring_div").css("visibility", "visible");
+  {% endif %}
+
+  {% if form.is_pre_stage.value == "yes" %}
+  $("#pre_stage_div").css("visibility", "visible");
+  {% endif %}
+
+  {% if form.is_thankyou_stage.value == "yes" %}
+  $("#thankyou_stage_div").css("visibility", "visible");
+  {% endif %}
+
+
+  $("#is_recurring").on("click", function() {
+    if ($(this).is(":checked")) {
+      $("#recurring_div").css("visibility", "visible");
+    } else {
+      $("#recurring_div").css("visibility", "hidden");
+    }
+  });
+
+  $("#is_pre_stage").on("click", function() {
+    if ($(this).is(":checked")) {
+      $("#pre_stage_div").css("visibility", "visible");
+    } else {
+      $("#pre_stage_div").css("visibility", "hidden");
+    }
+  });
+
+  $("#is_thankyou_stage").on("click", function() {
+    if ($(this).is(":checked")) {
+      $("#thankyou_stage_div").css("visibility", "visible");
+    } else {
+      $("#thankyou_stage_div").css("visibility", "hidden");
+    }
+  });
+
+  $(document).on("click", "#add_more", function() {
+  i++;
+
+  var clonedQuestion = `
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-12">
+          <label for="question-${i}">Question</label>
+          <input id="question-${i}" placeholder="Enter Question" type="text" class="form-control" name="questions-${i}[]">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <label for="answer1-${i}">Answer1</label>
+          <input id="answer1-${i}" placeholder="Enter answer" type="text" class="form-control" name="questions-${i}-answers[]">
+        </div>
+
+        <div class="col-sm-3">
+          <label for="answer2-${i}">Answer2</label>
+          <input id="answer2-${i}" placeholder="Enter answer" type="text" class="form-control" name="questions-${i}-answers[]">
+        </div>
+
+        <div class="col-sm-3">
+          <label for="answer3-${i}">Answer3</label>
+          <input id="answer3-${i}" placeholder="Enter answer" type="text" class="form-control" name="questions-${i}-answers[]">
+        </div>
+
+        <div class="col-sm-3">
+          <label for="answer4-${i}">Answer4</label>
+          <input id="answer4-${i}" placeholder="Enter answer" type="text" class="form-control" name="questions-${i}-answers[]">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <label for="score1-${i}">Score1</label>
+          <input id="score1-${i}" placeholder="Enter score" type="number" class="form-control sum_boxes${i}" name="questions-${i}-scores[]" value="0" onKeyUp="checkScore('sum_boxes${i}', this)">
+        </div>
+
+        <div class="col-sm-3">
+          <label for="score2-${i}">Score2</label>
+          <input id="score2-${i}" placeholder="Enter score" type="number" class="form-control sum_boxes${i}" name="questions-${i}-scores[]" value="0" onKeyUp="checkScore('sum_boxes${i}', this)">
+        </div>
+
+        <div class="col-sm-3">
+          <label for="score3-${i}">Score3</label>
+          <input id="score3-${i}" placeholder="Enter score" type="number" class="form-control sum_boxes${i}" name="questions-${i}-scores[]" value="0" onKeyUp="checkScore('sum_boxes${i}', this)">
+        </div>
+
+        <div class="col-sm-3">
+          <label for="score4-${i}">Score4</label>
+          <input id="score4-${i}" placeholder="Enter score" type="number" class="form-control sum_boxes${i}" name="questions-${i}-scores[]" value="0" onKeyUp="checkScore('sum_boxes${i}', this)">
+        </div>
+      </div>
+    </div>
+  `;
+
+  $("#cloned_div").append(clonedQuestion);
+});
+
+
+  $(document).on("keyup", ".sum_boxes", function() {
+    var boxes = $("." + this.className),
+      total = 0;
+
+    boxes.each(function() {
+      total += !isNaN(parseInt(this.value)) ? parseInt(this.value) : 0;
+    });
+
+    if (total > 100) {
+      alert("Sum of scores cannot be more than 100");
+      this.value = "";
+    }
+  });
+});
+</script>
+<style>
+.hidden {
+  visibility: hidden;
+}
+</style>
+
+
+
+
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+  var i = $("#lastValue").val();
+
+  {% if form.is_recurring.value == "yes" %}
+  $("#recurring_div").css("visibility", "visible");
+  {% endif %}
+
+  {% if form.is_pre_stage.value == "yes" %}
+  $("#pre_stage_div").css("visibility", "visible");
+  {% endif %}
+
+  {% if form.is_thankyou_stage.value == "yes" %}
+  $("#thankyou_stage_div").css("visibility", "visible");
+  {% endif %}
+
+
+  $("#is_recurring").on("click", function () {
+    if ($(this).is(":checked")) {
+      $("#recurring_div").css("visibility", "visible");
+    } else {
+      $("#recurring_div").css("visibility", "hidden");
+    }
+  });
+
+  $("#is_pre_stage").on("click", function () {
+    if ($(this).is(":checked")) {
+      $("#pre_stage_div").css("visibility", "visible");
+    } else {
+      $("#pre_stage_div").css("visibility", "hidden");
+    }
+  });
+
+  $("#is_thankyou_stage").on("click", function () {
+    if ($(this).is(":checked")) {
+      $("#thankyou_stage_div").css("visibility", "visible");
+    } else {
+      $("#thankyou_stage_div").css("visibility", "hidden");
+    }
+  
+
+  $(document).ready(function() {
+  var i = parseInt($('#lastValue').val());
+
+  $(document).on("click", "#add_more", function() {
+    i++;
+
+    var clonedQuestion = `
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-12">
+            <label for="name">Question</label>
+            <input id="name" placeholder="Enter Question" type="text" class="form-control" name="question${i}[]">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <label for="name">Answer1</label>
+            <input id="name" placeholder="Enter answer" type="text" class="form-control" name="question${i}['answers'][]">
+          </div>
+
+          <div class="col-sm-3">
+            <label for="name">Answer2</label>
+            <input id="name" placeholder="Enter answer" type="text" class="form-control" name="question${i}['answers'][]">
+          </div>
+
+          <div class="col-sm-3">
+            <label for="name">Answer3</label>
+            <input id="name" placeholder="Enter answer" type="text" class="form-control" name="question${i}['answers'][]">
+          </div>
+
+          <div class="col-sm-3">
+            <label for="name">Answer4</label>
+            <input id="name" placeholder="Enter answer" type="text" class="form-control" name="question${i}['answers'][]">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <label for="name">Score1</label>
+            <input id="name" placeholder="Enter score" type="number" class="form-control sum_boxes${i}" name="question${i}['scores'][]" value="0" onKeyUp="checkScore('sum_boxes${i}', this)">
+          </div>
+
+          <div class="col-sm-3">
+            <label for="name">Score2</label>
+            <input id="name" placeholder="Enter scores1" type="number" class="form-control sum_boxes${i}" name="question${i}['scores'][]" value="0" onKeyUp="checkScore('sum_boxes${i}', this)">
+          </div>
+
+          <div class="col-sm-3">
+            <label for="name">Score3</label>
+            <input id="name" placeholder="Enter scores1" type="number" class="form-control sum_boxes${i}" name="question${i}['scores'][]" value="0" onKeyUp="checkScore('sum_boxes${i}', this)">
+          </div>
+
+          <div class="col-sm-3">
+            <label for="name">Score4</label>
+            <input id="name" placeholder="Enter scores1" type="number" class="form-control sum_boxes${i}" name="question${i}['scores'][]" value="0" onKeyUp="checkScore('sum_boxes${i}', this)">
+          </div>
+        </div>
+      </div>
+    `;
+
+    $("#cloned_div").append(clonedQuestion);
+  });
+
+  $(document).on("keyup", ".sum_boxes", function() {
+    var boxes = $("." + this.className),
+        total = 0;
+
+    boxes.each(function() {
+      total += !isNaN(parseInt(this.value)) ? parseInt(this.value) : 0;
+    });
+
+    if (total > 100) {
+      alert("Sum of scores cannot be more than 100");
+      this.value = "";
+    }
+  });
+});
+});  
+</script>
+<style>
+.hidden {
+  visibility: hidden;
+}
+</style> -->
+

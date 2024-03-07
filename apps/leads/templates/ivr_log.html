@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>IVR Logs</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">IVF Logs</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="card">
+        <div class="card-body">
+            <div class="row table-responsive">
+                <h4>
+                    {% if ivr_log.data.total > 0 %}
+                        Total records: {{ ivr_log.data.total }}
+                    {% endif %}
+                </h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Who</th>
+                            <th>What</th>
+                            <th>When</th>
+                            <th>Recording</th>
+                            <th>Region</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if ivr_log.data.hits|length > 0 %}
+                            {% for val in ivr_log.data.hits %}
+                                {% with val._source as source %}
+                                    {% with source.log_details.0 as log_detail %}
+                                        {% with source.received_by.0 as received_by %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ source.caller_number }}</td>
+                                                <td>
+                                                    {% if source.event == 1 %}
+                                                        Incoming call
+                                                    {% elif source.event == 2 %}
+                                                        Outgoing call
+                                                    {% else %}
+                                                        Call
+                                                    {% endif %}
+                                                    {{ log_detail.action }}
+                                                    {% if log_detail.action == "received" %}
+                                                        {% if received_by %}
+                                                            by {{ received_by.name }}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ source.start_time|date:"F j, Y, g:i a" }}</td>
+                                                <td>
+                                                    {% if source.filename %}
+                                                        <a target="_blank" download href="{{ source.filename }}">Recording</a>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ source.state }}</td>
+                                                <td>{{ source.duration }}</td>
+                                            </tr>
+                                        {% endwith %}
+                                    {% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

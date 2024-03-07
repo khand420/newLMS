@@ -1,0 +1,697 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+
+    <link rel="stylesheet" type="text/css" href="{% static 'dashboard/datatable/jquery.dataTables.min.css' %}">
+
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Leads</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Leads</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-8">
+                    <form method="get" action="{% url 'telecaller-lead' %}">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <input type="text" class="form-control" name="searchText" id="searchText"
+                                       placeholder="Search By Lead ID/FBForm ID/name/phone/email"
+                                       value="{{ leaddata.searchText|default:'' }}">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary px-4" id="formsubmit">Search</button>
+                                <a href="javascript:void();" class="btn btn-success px-4" onclick="resetfilter(0)">Reset</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+    
+                <div class="col-md-4 card-tools">
+                    <button id="importLeads" class="btn btn-primary">Import Leads</button>
+                    <a href="{% url 'add_lead' %}" class="btn btn-success">Add Lead</a>
+                    <button id="advanceSearch" style="margin-top: 10px" class="btn btn-warning">Advance Search</button>
+                    {% if user_department != 'telecaller' %}
+                        <a href="javascript:void();" onclick="exportfile()" class="btn btn-success">Export Leads</a>
+                    {% endif %}
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-8 importLeadsDiv" style="display:none">
+                    <form method="post" action="imports/" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% csrf_token %}
+                                <input type="file" name="file" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="submit" name="submit" value="Import" class="btn btn-primary px-4">
+                                <a class="btn btn-success px-3" href='sample.csv'>Download Sample</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <br />
+    
+            <div class="row">
+                {% if leaddata %}
+                <div class="col-md-12 advanceSearchDiv">
+                    {% else %}
+                    <div class="col-md-12 advanceSearchDiv" style="display: none;">
+                        {% endif %}
+                    <form method="post" action="{% url 'telecaller-lead' %}" enctype="multipart/form-data" id="advanceSearchForm">
+                        <input type="hidden" class="form-control" name="searchTextnew"
+                               placeholder="Search By Lead ID/name/phone/email" value="" id="searchTextnew">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <select name="status" class="form-control" id="status">
+                                        <option value="">Filter By Status</option>
+                                        {% for status in statuses %}
+                                            <option value="{{ status.id }}"
+                                                {% if leaddata.status == status.id %} selected{% endif %}>
+                                                {{ status.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            
+                                <div class="col-md-3">
+                                    <select name="type" class="form-control" id="type">
+                                        <option value="">Filter By Type</option>
+                                        {% for type in types %}
+                                            <option value="{{ type.id }}"
+                                                {% if leaddata.type == type.id %} selected{% endif %}>
+                                                {{ type.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            
+                                <div class="col-md-3">
+                                    <select name="product" class="form-control" id="product">
+                                        <option value="">Filter By Product</option>
+                                        {% for product in products %}
+                                            <option value="{{ product.id }}"
+                                                {% if leaddata.product == product.id %} selected{% endif %}>
+                                                {{ product.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            
+                                <div class="col-md-3">
+                                    <select name="source" class="form-control" id="source">
+                                        <option value="">Filter By Source</option>
+                                        {% for source in sources %}
+                                            <option value="{{ source.id }}"
+                                                {% if leaddata.source == source.id %} selected{% endif %}>
+                                                {{ source.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            
+                                <div class="col-md-3">
+                                    <select name="creation_date_sort" class="form-control" id="creation_date_sort">
+                                        <option value="">Sort by creation date</option>
+                                        <option value="asc" {% if leaddata.creation_date_sort == 'asc' %} selected{% endif %}>ASC</option>
+                                        <option value="desc" {% if leaddata.creation_date_sort == 'desc' %} selected{% endif %}>DESC</option>
+                                    </select>
+                                </div>
+
+                                
+                                <div class="col-md-3">
+                                    <input id="filter_updated_dates" autocomplete="off"
+                                        placeholder="Filter by Updated Date" type="text" class="form-control"
+                                        name="filter_updated_dates" value="">
+                                </div>
+
+                                <!-- <div class="col-md-3">
+                                    <input id="filter_date_range" autocomplete="off" placeholder="Filter by Date range"
+                                        type="text" class="form-control" name="filter_date_range"
+                                        value="{{ leaddata.filter_date_range|default_if_none:'' }}">
+                                </div> -->
+
+                                <!-- <div class="col-md-3">
+                                    <input id="filter_update_range" autocomplete="off"
+                                        placeholder="Filter by Updated Date range" type="text" class="form-control"
+                                        name="filter_update_range"
+                                        value="{{ leaddata.filter_update_range|default_if_none:'' }}">
+                                </div> -->
+
+
+                            
+                                <div class="col-md-3">
+                                    <input id="filter_created_date" autocomplete="off" placeholder="Filter by Date" type="text" class="form-control" name="filter_created_date" value="{{ leaddata.filter_created_date|default:'' }}">
+                                </div>
+                            
+                                <div class="col-md-3">
+                                    <input id="filter_date_range" autocomplete="off" placeholder="Filter by Date range" type="text" class="form-control" name="filter_date_range" value="{{ leaddata.filter_date_range|default:'' }}">
+                                </div>
+
+                                <div class="col-md-3">
+                                    <input id="filter_update_range" autocomplete="off"
+                                        placeholder="Filter by Updated Date range" type="text" class="form-control"
+                                        name="filter_update_range"
+                                        value="{{ leaddata.filter_update_range|default_if_none:'' }}">
+                                </div>
+
+                            
+                                <div class="col-md-3">
+                                    <select name="transferred" class="form-control" id="transferred">
+                                        <option value="">Sort by transferred</option>
+                                        <option value="yes" {% if leaddata.transferred == 'yes' %} selected{% endif %}>Yes</option>
+                                    </select>
+                                    <input type="hidden" name="pagerest" id="pagerest" value="{{ pagerest }}">
+                                </div>
+                            </div>
+                            
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row table-responsive">
+                <table class="table table-striped" id="leadtable">
+                    <thead>
+                        <tr>
+                            <th>Lead ID</th>
+                            <th>Date</th>
+                            <th>City</th>
+                            <th>Phone</th>
+                            <th>Name</th>
+                            <th>Product</th>
+                            <th>Update Date</th>
+                            <th>Source</th>
+                            <th>Stage</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be generated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+</section>
+
+
+<div class="modal fade" id="clicktocall" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Click2call</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" value="" id="ivr_customer_number" />
+                    <input type="hidden" value="" id="leadid">
+                    <label for="attachmentInputFile">Select User</label>
+                    <div class="input-group">
+                        <select id="ivr_user_id" class="form-control">
+                            {% for user in ivruser %}
+                            <option value="{{ user.user_id }}">{{ user.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <p class="ivrresponse"></p>
+                    <img src="" id="ivrload" style="display:none;" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger pull-right" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary pull-left" id="callivf">Call Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="{% url 'upload_files' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="attachment_lead_id" id="attachment_lead_id">
+    <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Quick File Upload</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="attachmentInputFile">Enter File</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="attachmentInputFile" multiple="true"
+                                    name="files[]">
+                                <label class="custom-file-label" for="attachmentInputFile">Choose file</label>
+                            </div>
+                            <div class="input-group-append">
+                                <button class="btn btn-success input-group-text" type="submit">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<form action="{% url 'lead-transfer' %}" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="transfer_lead_id" id="transfer_lead_id">
+    {% csrf_token %}
+    <div class="modal fade" id="lead_transfer_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Lead Transfer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" id="transfertelecallers">
+                        <label for="attachmentInputFile">Telecaller's</label>
+                        <div class="input-group">
+                            <div class="col-sm-12 col-xs-12">
+                                <div class="input-group">
+                                    <select id="leadtransferdto" name="telecaller" class="form-control" required>
+                                        <option value="">-- Select Telecaller --</option>
+                                        {% for telecaller in telecaller_users %}
+                                        <option value="{{ telecaller.user_id }}">{{ telecaller.user__username }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group-append" style="margin-top: 15px;">
+                                <button class="btn btn-success pull-right" type="submit">Transfer</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <p id="currentassigned"></p>
+                        <table id="leadassigntransfertable">
+                            <thead>
+                                <tr>
+                                    <th>Telecaller</th>
+                                    <th>Transferred On</th>
+                                    <th>Transferred By</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leadtransfer_table"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" id="cmbox" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Communication Description</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Value</label>
+                    <div class="input-group">
+                        <span id="cm_value">-</span>
+                    </div>
+                    <label>Description</label>
+                    <div class="input-group">
+                        <span id="description"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger pull-right" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    table#leadassigntransfertable {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    }
+
+    table#leadassigntransfertable td, table#leadassigntransfertable th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    }
+
+    table#leadassigntransfertable tr:nth-child(even) {
+    background-color: #dddddd;
+    }
+</style>
+
+<script src="{% static 'js/datatable/jquery.min.js' %}"></script>
+<script src="{% static 'js/datatable/jquery.dataTables.min.js' %}"></script>
+
+<!-- <script src="https://cdn.datatables.net/1.11.6/js/jquery.dataTables.min.js"></script> -->
+
+
+<script>  
+
+
+
+    {% if pagerest == 'false' %}
+    console.log("pagerest django value", pagerest);
+    resetfilter(1);
+    {% endif %}
+
+    function resetfilter(pagereload = 0) {
+        $('#pagerest').val('true');
+        localStorage.clear();
+        if(pagereload == 1) {
+            drawtable(false);
+        } else {
+            location.reload();
+        }
+        
+    }
+    $(function(){       
+    
+             $("#importLeads").on("click", function(){
+                 $(".importLeadsDiv").toggle();
+             })
+    
+             $("#advanceSearch").on("click", function(){
+                 $(".advanceSearchDiv").toggle();
+             })
+    
+            $(document).on('click','.openlead_transfer_modal',function(){
+                console.log("click")
+                $('#currentassigned').empty();
+                $('#transfertelecallers').show();
+                const lead_id = $(this).data("lead_id");
+                console.log(lead_id, 'lead_id');
+
+                const csrfToken = $('input[name=csrfmiddlewaretoken]').val();  
+                $("#transfer_lead_id").val(lead_id);
+
+                $.ajaxSetup({
+                  headers: {
+                      "X-CSRFToken": "{{ csrf_token }}"
+                  }
+              });    
+                $.ajax({
+                    url: '/lead-transferred-user/',
+                    data: {'lead_id': lead_id, 'csrfmiddlewaretoken': csrfToken,},
+                    dataType: 'json',
+                    method:'post',
+                    success: function(data)
+                    {
+                        console.log("AJAX success: ", data);
+                        $('#currentassigned').empty().append(data.current_assigned);
+                        $('#leadtransfer_table').empty().append(data.message);
+                        if(data.assign == 0){
+                            $('#transfertelecallers').hide();
+                        }
+                    },      
+                    error: function(xhr, status, error) {
+                        console.error("AJAX error: ", error);
+                },
+
+                });
+    
+             });
+             
+             $(".openAttachmentModal").on("click", function(){
+                const lead_id = $(this).data("lead_id");
+                $("#attachment_lead_id").val(lead_id);
+             })
+    
+             $('.custom-file input').change(function (e) {
+            var files = [];
+            for (var i = 0; i < $(this)[0].files.length; i++) {
+                files.push($(this)[0].files[i].name);
+            }
+            $(this).next('.custom-file-label').html(files.join(', '));
+        });
+    });
+    
+    function ivrcall(phone,leadid=''){
+        $('.ivrresponse').empty();
+        $("#callivf").show();
+        $("#ivr_customer_number").val(phone);
+    
+        $('#clicktocall').modal('show'); 
+        $("#leadid").val(leadid);
+    }
+    $("#callivf").on("click", function(){
+        $(this).hide();
+        $('#ivrload').show();
+        var customer = $('#ivr_customer_number').val();
+        var leadid = $('#leadid').val();
+        var ivruser = $('select#ivr_user_id option:selected').val();
+        //console.log(ivruser+'-------'+customer);
+    
+        $.ajax({
+            url: '/ivrinitiate/',
+            data: {'user_id': ivruser, 'customer':customer,'leadid':leadid},
+            dataType: 'json',
+            method:'post',
+            success: function(data)
+            {
+                $('.ivrresponse').empty().append(data.message);
+                $('#ivrload').hide();
+            } 
+        });
+        $("select#ivr_user_id option").prop("selected", false);
+    });
+    $(document).ready(function(){
+        var pagerest =$('#pagerest').val();
+        drawtable(pagerest);
+        $('#formsubmit').click(function(){
+            localStorage.clear();
+            drawtable(true);
+        });
+        
+        $("#status").on("change", function() {
+            localStorage.clear();
+            drawtable(true);
+        });
+        $("#type").on("change", function() {
+            localStorage.clear();
+            drawtable(true);
+        });
+        $("#product").on("change", function() {
+            localStorage.clear();
+            drawtable(true);
+        });
+    
+        $("#source").on("change", function() {
+            localStorage.clear();
+            drawtable(true);
+        });
+    
+        $("#transferred").on("change", function() {
+            localStorage.clear();
+            drawtable(true);
+        });
+    
+        
+        $("#creation_date_sort").on("change", function() {
+            localStorage.clear();
+            drawtable(true);
+        });
+    
+        $('#filter_created_date').datetimepicker({
+            format:'Y-m-d',
+            minView: 2,
+            timepicker: false,
+            dateonly: true,
+            onChangeDateTime:function(dp,$input){
+                localStorage.clear();
+                drawtable(true);
+            }
+        });
+    
+        $('#filter_updated_dates').datetimepicker({
+            format:'Y-m-d',
+            minView: 2,
+            timepicker: false,
+            dateonly: true,
+            onChangeDateTime:function(dp,$input){
+                localStorage.clear();
+                drawtable(true);
+            }
+        });
+    
+        $('input#filter_date_range').daterangepicker({
+            autoUpdateInput: false,
+            opens: 'left'
+        }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        });
+       
+    
+        $('input#filter_date_range').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+            localStorage.clear();
+            drawtable(true);
+        });
+    
+        $('input#filter_date_range').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+    
+    
+        $('input#filter_update_range').daterangepicker({
+            autoUpdateInput: false,
+            opens: 'left'
+        }, function(start, end, label) {
+            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        });
+        
+        $('input#filter_update_range').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+            localStorage.clear();
+            drawtable(true);
+        });
+    
+        $('input#filter_update_range').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+    
+        $("#locationq").on("change", function() {
+            localStorage.clear();
+            drawtable(true);
+        });
+    });
+    
+        function drawtable (page_reset = 'true') {
+    
+             var table = $('#leadtable').on( 'page.dt',   function () {
+                    //console.log('Page' );
+                    page_reset = true;
+                }).on( 'preInit.dt', function (e, settings) {
+                    page_reset = false;
+                } ).DataTable({
+                bDestroy: true,
+                processing: true,
+                serverSide: true,
+                searching: false,
+                bLengthChange: false,
+                // oLanguage: {
+                //     sProcessing: "<img src='images/Ajaxloader.gif'>"
+                // },
+            
+                ajax: {
+                  url: '/telecaller-leads',
+                    data: function (d) {
+                        console.log('data',d);
+                        d.searchText = $('#searchText').val(),
+                        d.status = $('#status').val(),
+                        d.type = $('#type').val()
+                        d.product = $('#product').val()
+                        d.source = $('#source').val()
+                        d.creation_date_sort = $('#creation_date_sort').val()
+                        d.filter_created_date = $('#filter_created_date').val()
+                        d.filter_updated_dates = $('#filter_updated_dates').val()
+                        console.log(d.filter_updated_dates,'-------')
+                        d.filter_date_range = $('#filter_date_range').val()
+                        d.filter_update_range = $('#filter_update_range').val()
+                        d.locationq = $('#locationq').val()
+                        d.transferred = $('#transferred').val()
+                    }
+                },
+                success: function(response) {
+                console.log("AJAX success: ", response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX error: ", error);
+                },
+
+                bStateSave: page_reset,
+                fnStateSave: function (oSettings, oData) {
+                  
+                    if(page_reset == 'true') {
+                        localStorage.setItem( 'DataTables', JSON.stringify(oData) );
+                    }
+                },
+                fnStateLoad: function (oSettings) {
+                    if(page_reset == 'true') {
+                        return JSON.parse( localStorage.getItem('DataTables') );
+                    }
+                },
+                fnDrawCallback:function(){
+                    if(page_reset == 'false') {
+                        table.state.clear();
+                    }
+                },
+                columns: [
+                    {data: 'leadid', name: 'leadid', orderable: false, searchable: false},
+                    {data: 'date', name: 'date', orderable: false, searchable: false},
+                    {data: 'city', name: 'city', orderable: false, searchable: false},
+                    {data: 'phone', name: 'phone', orderable: false, searchable: false},
+                    {data: 'name', name: 'name', orderable: false, searchable: false},
+                    {data: 'product', name: 'product', orderable: false, searchable: false},
+                    {data: 'updated_date', name: 'updated_date', orderable: false, searchable: false},
+                    {data: 'source', name: 'source', orderable: false, searchable: false},
+                    {data: 'stage', name: 'stage', orderable: false, searchable: false},
+                    {data: 'actions', name: 'actions', orderable: false, searchable: false},
+                ]
+    
+            });
+        }
+          
+    function exportfile() {
+        var searchText = $('#searchText').val();
+        $('#searchTextnew').val(searchText);
+        $('#advanceSearchForm').attr('action', 'leads.export').submit();
+    }
+    </script>
+
+
+{% endblock %}
+
+
+
+
+
+
+<!-- Rest of the code remains the same -->

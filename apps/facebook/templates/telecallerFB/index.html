@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Telecaller FB Forms</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Telecaller FB Forms</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header row">
+            <div class="col-md-10">
+            </div>
+
+            <div class="col-md-2 card-tools">
+                <a style="width:100% !important" href="{% url 'facebookTelecaller.add' %}" class="btn btn-primary">Assign Forms</a>
+            </div>
+        </div> 
+
+        <div class="card-body">
+            <div class="row">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Telecaller</th>
+                            <th>FB Page</th>
+                            <th>FB Form</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fbform in telecallerfbforms %}
+                        <tr>
+                            <td>{{ fbform.telecaller_name }}</td>
+                            <td>{{ fbform.fbpage_name }}</td>
+                            <td>{{ fbform.fbform_name }}</td>
+                            <td>{{ fbform.status }}</td>
+                            <td>
+                                <a href="{% url 'facebookTelecallers' %} "><i class="fas fa-edit"></i></a>
+                                <!--<a onclick="return confirm('Do you really want to delete this Telecaller?')" style="color:red" href="{% url 'facebookTelecallers.delete' %}"><i class="fa fa-trash"></i></a>-->
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+             <!-- Telecallerfbforms.links() -->
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

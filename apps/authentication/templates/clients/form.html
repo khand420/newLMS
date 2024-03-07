@@ -1,0 +1,38 @@
+<div class="card-body">
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="name">User Name</label>
+            <input type="text" name="username" value="{{userform.username}}" class="form-control" required>
+        </div>
+        <div class="col-sm-6">
+            <label for="name">Name</label>
+            <input type="text" name="first_name" value="{{userform.first_name}}" class="form-control" required>
+        </div>
+       
+        <div class="col-sm-6">
+            <label for="email">Email</label>
+            <input type="email" name="email" value="{{userform.email}}" class="form-control" required>
+        </div>
+        <div class="col-sm-6">
+            <label for="phone">Phone</label>
+            <input type="phone" name="phone" value="{{detail.phone}}" class="form-control" required>
+        </div>
+        <div class="col-sm-6">
+            <label for="password">Password</label>
+            <input type="text" name="password" value="" class="form-control" required>
+        </div>
+        <div class="col-sm-6">
+            <label for="phone">Industry</label>
+            <select class="form-control select2" name="industry_id" id="industrydata">
+                <option value="">Select Industry</option>
+                {% for industry in industrydata %}
+
+                
+                    <option value="{{ industry.id }}" {% if detail.industry_id == industry.id %}selected{% endif %}>{{ industry.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="hidden" name="department_id" value="client"> 
+    </div>
+    <button type="submit" class="btn btn-primary px-4 float-right">Submit</button>
+</div>

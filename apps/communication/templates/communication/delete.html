@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Delete Communication</h1>
+    <p>Are you sure you want to delete this communication?</p>
+    <p><strong>Title:</strong> {{ communication.title }}</p>
+    <p><strong>Description:</strong> {{ communication.description }}</p>
+
+    <form method="post" action="{% url 'communication_delete' communication.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'communications' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

@@ -1,0 +1,11 @@
+<div class="card-body">
+    <div class="row">
+        {% for field in leadform %}
+            <div class="col-sm-6">
+                <label for="{{ field.auto_id }}">{{ field.label }}</label>
+                {{ field }}
+            </div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary px-4 float-right">Submit</button>
+</div>

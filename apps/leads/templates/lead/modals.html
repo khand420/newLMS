@@ -1,0 +1,214 @@
+<div class="modal fade" id="questionModal" data-keyboard="false" data-backdrop="static">
+    <form action="javascript:void(0)" method="post" id="saveQuestionsForm">
+        {% csrf_token %}
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Questions</h4>
+                </div>
+                <div class="modal-body" id="questionModalBody">
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                   <input type="hidden" id="stage_id" name="stage_id" /> 
+
+                    <button type="button" id="closeQuestionModal" class="btn btn-danger">Skip</button>
+                    <button type="button" class="btn btn-primary" id="saveQuestionFormButton">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </form>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+
+
+<!-- <form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="attachment_lead_id" id="attachment_lead_id">
+    <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Quick File Upload</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="attachmentInputFile">Enter File</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="attachmentInputFile" multiple="true"
+                                    name="files[]">
+                                <label class="custom-file-label" for="attachmentInputFile">Choose file</label>
+                            </div>
+                            <div class="input-group-append">
+                                <button class="btn btn-success input-group-text" type="submit">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form> -->
+
+
+<form action="{% url 'upload_files' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="attachment_lead_id" id="attachment_lead_id">
+    <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Quick File Upload</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="attachmentInputFile">Select File(s)</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="attachmentInputFile" multiple="true"
+                                    name="files">
+                                <label class="custom-file-label" for="attachmentInputFile">Choose file</label>
+                            </div>
+                            <div class="input-group-append">
+                                <button class="btn btn-success input-group-text" type="submit">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+
+<form action="{% url 'lead-assigning' %}" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="assigning_lead_id" id="assigning_lead_id">
+   
+    {% csrf_token %}
+
+    <div class="modal fade" id="lead_assigning_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Assign Lead</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" id="assigntelecallerlist">
+                        <label for="attachmentInputFile">Telecaller's</label>
+                        <div class="input-group">
+                            <div class="col-sm-12 col-xs-12">
+                                <div class="input-group">
+                                    <select id="leadassignto" name="telecaller" class="form-control" required>
+                                        <option value="">-- Select Telecaller --</option>
+                                        {% for telecaller in telecallers %}
+                                        <option value="{{ telecaller.user_id }}">{{ telecaller.user__username }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group-append" style="margin-top:15px;">
+                                <button class="btn btn-success pull-right" type="submit">Assign Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <table id="leadassigntransfertable">
+                            <thead>
+                                <tr>
+                                    <th>Telecaller</th>
+                                    <th>Assigned On</th>
+                                    <th>Assigned</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assigneduser_table"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form action="{% url 'lead-transfer' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="lead_id" id="transfer_lead_id">
+
+    <div class="modal fade" id="lead_transfer_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Lead Transfer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" id="transfertelecallers">
+                        <label for="attachmentInputFile">Telecaller's</label>
+                        <div class="input-group">
+                            <div class="col-sm-12 col-xs-12">
+                                <div class="input-group">
+                                    <select id="leadtransferdto" name="telecaller" class="form-control" required>
+                                        <option value="">-- Select Telecaller --</option>
+                                        {% for user in telecallers %}
+                                        <option value="{{ id }}">{{ user }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group-append" style="margin-top:15px;">
+                                <button class="btn btn-success pull-right" type="submit">Transfer</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <p id="currentassigned"></p>
+                        <table id="leadassigntransfertable">
+                            <thead>
+                                <tr>
+                                    <th>Telecaller</th>
+                                    <th>Transferred On</th>
+                                    <th>Transferred By</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leadtransfer_table"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

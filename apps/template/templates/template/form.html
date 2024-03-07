@@ -1,0 +1,177 @@
+<div class="card-body">
+    <div class="row">
+        <div class="col-sm-6">
+            <label class="radio-inline ">
+                <input type="radio" name="type" class="" value="email" {% if template.type == 'email' %}checked{% endif %}> Email
+            </label>
+            <label class="radio-inline" style="margin-left:10px">
+                <input type="radio" class="" name="type" value="sms" {% if template.type == 'sms' %}checked{% endif %}> SMS
+            </label>
+            <label class="radio-inline" style="margin-left:10px">
+                <input type="radio" class="" name="type" value="whatsapp" {% if template.type == 'whatsapp' %}checked{% endif %}> Whatsapp
+            </label>
+        </div>
+    </div>
+
+    <div class="row" id="smstype">
+        <div class="col-sm-6">
+            <label class="radio-inline ">
+                <input type="radio" name="smstype" class="" value="english" {% if template.smstype == 'english' %}checked{% endif %} > English
+            </label>
+            <label class="radio-inline" style="margin-left:10px">
+                <input type="radio" class=" " name="smstype" value="hindi" {% if template.smstype == 'hindi' %}checked{% endif %}> Hindi
+            </label>
+        </div>
+    </div>
+
+    <div class="row" id="temid">
+        <div class="col-sm-6">
+            <label for="message">Template Id</label>
+            <input class="form-control" type="text" name="template_id" placeholder="Enter Template Id" value="{{ template.template_id }}">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="name">Template Name</label>
+            <input id="name" placeholder="Enter template name" type="text" class="form-control" name="name" value="{{ template.name }}" required>
+        </div>
+    </div>
+
+    <div class="row" id="whatsapptype">
+        <div class="col-sm-6">
+            <label class="radio-inline ">
+                <input type="radio" name="whatsapptype" class="" value="text" {% if template.whatsapptype == 'text' %}checked{% endif %}> Text
+            </label>
+            <label class="radio-inline" style="margin-left:10px">
+                <input type="radio" class="" name="whatsapptype" value="media" {% if template.whatsapptype == 'media' %}checked{% endif %}> Media
+            </label>
+        </div>
+    </div>
+
+    <div class="row" id="whatsappmedia">
+        <div class="col-sm-6">
+            <label for="message">Upload Media</label>
+            <input type='file' name='whatsappmedia' class="" id="whatsappfile">
+            {% if template.whatsappmedia %}
+            <p>{{ template.whatsappmedia.name }}</p>
+            <!-- <p>{{ template.whatsappmedia.name|cut:".png" }}</p> -->
+            <p>Previously uploaded image:</p>
+            <img src="{{ template.whatsappmedia.url }}" alt="WhatsApp Media Image" style="max-width: 200px;">
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row" id="subject">
+        <div class="col-sm-6">
+            <label for="subject">Subject</label>
+            <input type="text" class="form-control" placeholder="Enter Subject" name="subject" value="{{ template.subject }}">
+        </div>
+    </div>
+
+    <div class="row" id="parameters">
+        <div class="col-sm-6">
+            <label for="message">Parameters</label>
+            <p>Add parameters in comma-separated format like <b>{NAME},{DATE},etc..</b></p>
+            <p><strong>{NAME}</strong> for adding name in the message template.</p>
+            <p><strong>{DATE}</strong> for adding stage date in the message template.</p>
+            <p><strong>{TIME}</strong> for adding stage time in the message template.</p>
+            <p><strong>{ENQUIRYNO}</strong> for adding enquiry number in the message template.</p>
+            <input class="form-control" type="text" name="parameters" placeholder="Enter Parameters" value="{{ template.parameters }}">
+        </div>
+    </div>
+
+    <div class="row" id="mesage">
+        <div class="col-sm-6">
+            <label for="message">Message</label>
+            <p>Variables:</p>
+            <p><strong>{NAME}</strong> for adding name in the message template.</p>
+            <p><strong>{DATE}</strong> for adding stage date in the message template.</p>
+            <p><strong>{TIME}</strong> for adding stage time in the message template.</p>
+            <textarea class="form-control tinymce" placeholder="Enter Message" name="message">{{ template.message }}</textarea>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary px-4 float-right" onclick="return validateForm()">Save</button>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+
+      $(function(){
+
+let value =   $('input[name="type"]:checked').val();
+let mediawhatsapp =   $('input[name="whatsapptype"]:checked').val();
+$("#subject").show();
+$("#parameters").hide();
+$("#temid").hide();
+$("#smstype").hide();
+$("#whatsapptype").hide();
+$("#whatsappmedia").hide();
+$("#mesage").show();
+$("#whatsappfile").prop('required',false);
+if(value != 'email') {
+  $("#subject").hide();
+}
+if(value == 'whatsapp') {
+$("#parameters").show();
+$("#mesage").hide();
+$("#whatsapptype").show();
+}
+if(value == 'sms') {
+  $("#smstype").show();
+   let smstypeval =   $('input[name="smstype"]:checked').val();
+  if(smstypeval == 'hindi') {
+      $("#temid").show();
+  }
+}
+
+if(mediawhatsapp == 'media') {
+  $('#whatsappmedia').show();
+  $("#whatsappfile").prop('required',true);
+}
+$('input[name="type"]').on("click", function() {
+let value =   $('input[name="type"]:checked').val();
+$("#subject").show();
+$("#mesage").hide();
+$("#parameters").show();
+$("#whatsapptype").show();
+$("#temid").hide();
+$("#smstype").hide();
+if(value != 'email') {
+    $("#subject").hide();
+}
+if(value != 'whatsapp') {
+    $("#parameters").hide();
+    $("#whatsapptype").hide();
+    $("#mesage").show();
+}
+  if(value == 'sms') {
+      $("#smstype").show();
+
+  }
+})
+
+
+
+$('input[name="smstype"]').on("click", function() {
+  let smstypeval =   $('input[name="smstype"]:checked').val();
+   $("#temid").hide();
+   if(smstypeval == 'hindi') {
+      $("#temid").show();
+  }
+})
+
+
+$('input[name="whatsapptype"]').on("click", function() {
+  $("#whatsappfile").prop('required',false);
+  let typewhatsapp =   $('input[name="whatsapptype"]:checked').val();
+  $('#whatsappmedia').hide();
+  if(typewhatsapp == 'media') {
+      $('#whatsappmedia').show();
+      $("#whatsappfile").prop('required',true);
+  }
+})
+})
+
+</script>

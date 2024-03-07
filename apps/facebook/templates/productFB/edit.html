@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<meta name="_token" content="{{ csrf_token }}" />
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Edit Product FB Forms</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{% url 'facebookProducts' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'facebookProducts.edit' %}">Product FB Forms</a></li>
+                    <li class="breadcrumb-item active">Edit Product FB Forms</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-tools">
+                <a href="{% url 'facebookProducts' %}" class="btn btn-primary">Back</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    <div class="card card-primaryy">
+                        <form action="{% url 'facebookProducts.edit' %}" method="POST" id="formId">
+                            {% csrf_token %}
+                            {% include "productFB/form.html" %}
+                            <input type="hidden" name="id" value="{{ productforms.id }}">
+                            <input type="hidden" name="_method" value="PATCH">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

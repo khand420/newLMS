@@ -1,0 +1,19 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+
+
+{% block title %}Delete Location{% endblock %}
+
+{% block content %}
+  <h1>Delete Location</h1>
+  <p>Are you sure you want to delete the location: <strong>{{ location.name }}</strong>?</p>
+
+  <form method="post" action="{% url 'location_delete' location.id %}">
+    {% csrf_token %}
+    <input type="submit" value="Delete" class="btn btn-danger">
+    <a href="{% url 'locations' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+{% endblock %}
